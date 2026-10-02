@@ -13,7 +13,7 @@
     <!-- Google Fonts: Noto Serif TC, Noto Sans TC, Space Mono, Cinzel -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700;900&family=Noto+Sans+TC:wght@300;400;500;600;700&family=Noto+Serif+TC:wght@500;700;900&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700;900&family=Noto+Sans+TC:wght@400;500;600;700;900&family=Noto+Serif+TC:wght@600;700;900&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
     <script>
         tailwind.config = {
             theme: {
@@ -45,62 +45,98 @@
         }
     </script>
     <style>
+        /* Base font enlarged for comfortable reading on all devices */
+        html {
+            font-size: 17px;
+            -webkit-text-size-adjust: 100%;
+        }
+        @media (min-width: 640px) {
+            html {
+                font-size: 18px;
+            }
+        }
+        .font-scale-large {
+            font-size: 19px !important;
+        }
+        @media (min-width: 640px) {
+            .font-scale-large {
+                font-size: 20px !important;
+            }
+        }
+        .font-scale-xlarge {
+            font-size: 21px !important;
+        }
+        @media (min-width: 640px) {
+            .font-scale-xlarge {
+                font-size: 22px !important;
+            }
+        }
+
         body {
             background-color: #f7f4ec;
-            background-image: radial-gradient(#e5dec9 0.75px, transparent 0.75px);
-            background-size: 16px 16px;
+            background-image: radial-gradient(#e5dec9 0.85px, transparent 0.85px);
+            background-size: 18px 18px;
         }
         .hide-scrollbar::-webkit-scrollbar { display: none; }
         .hide-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
         .stamp-badge {
             display: inline-block;
-            padding: 3px 9px;
+            padding: 3px 8px;
             text-transform: uppercase;
             font-family: 'Space Mono', monospace;
-            font-size: 10px;
+            font-size: 0.72rem;
             font-weight: 700;
-            letter-spacing: 0.1em;
+            letter-spacing: 0.08em;
             border: 1.5px solid #9e1c1c;
             color: #9e1c1c;
             border-radius: 4px;
             transform: rotate(-1.5deg);
         }
-        .dossier-tab {
-            clip-path: polygon(0 0, calc(100% - 14px) 0, 100% 100%, 0 100%);
-        }
         .touch-btn {
-            min-height: 40px;
+            min-height: 44px;
             touch-action: manipulation;
         }
     </style>
 </head>
-<body class="text-slate-800 font-sans antialiased min-h-screen pb-24 selection:bg-brass selection:text-white" x-data="detectiveDossierApp()">
+<body class="text-slate-800 font-sans antialiased min-h-screen pb-28 selection:bg-brass selection:text-white transition-all duration-200" 
+      :class="fontScaleClass"
+      x-data="detectiveDossierApp()">
 
     <!-- Top Confidential Header Bar -->
     <header class="sticky top-0 z-50 bg-noir text-slate-100 border-b border-brass/30 shadow-lg backdrop-blur-md bg-opacity-95">
-        <div class="max-w-5xl mx-auto px-4 sm:px-6 h-14 flex items-center justify-between">
-            <div class="flex items-center space-x-2.5 cursor-pointer" @click="activeTab = 'dossier'">
-                <div class="w-8 h-8 rounded-lg bg-brass flex items-center justify-center text-noir font-bold text-sm shadow">
+        <div class="max-w-5xl mx-auto px-4 sm:px-6 h-16 flex items-center justify-between">
+            <div class="flex items-center space-x-3 cursor-pointer" @click="activeTab = 'dossier'">
+                <div class="w-9 h-9 rounded-xl bg-brass flex items-center justify-center text-noir font-bold text-base shadow">
                     <i class="fa-solid fa-magnifying-glass"></i>
                 </div>
                 <div class="flex flex-col">
-                    <div class="flex items-center gap-1.5">
-                        <span class="font-cinzel text-xs text-brass tracking-widest font-bold">CASE NO. 2026-TC</span>
-                        <span class="stamp-badge py-0 px-1 border-brass text-brass text-[9px] scale-90">TOP SECRET</span>
+                    <div class="flex items-center gap-2">
+                        <span class="font-cinzel text-xs sm:text-sm text-brass tracking-wider font-bold">CASE NO. 2026-TC</span>
+                        <span class="stamp-badge py-0 px-1 border-brass text-brass text-[10px] scale-90">TOP SECRET</span>
                     </div>
-                    <span class="font-serif font-black text-sm text-slate-100 tracking-wide">台中名偵探家庭解謎手冊</span>
+                    <span class="font-serif font-black text-base sm:text-lg text-slate-100 tracking-wide leading-tight">台中名偵探家庭解謎手冊</span>
                 </div>
             </div>
 
-            <!-- Header Case Progress indicator -->
-            <div class="flex items-center space-x-3">
-                <div class="hidden sm:flex items-center space-x-2 text-xs font-mono bg-noirCard px-3 py-1 rounded-full border border-slate-700">
-                    <span class="text-slate-400">破案進度:</span>
-                    <span class="text-brass font-bold" x-text="solvedCount + ' / 6'"></span>
+            <!-- Top Controls: Font Size Switcher & Manual Button -->
+            <div class="flex items-center space-x-2 sm:space-x-3">
+                <!-- Font Size Selector -->
+                <div class="flex items-center bg-noirCard border border-slate-700 rounded-xl p-1 text-xs font-bold text-slate-300">
+                    <button @click="setFontScale('normal')" 
+                            :class="fontScale === 'normal' ? 'bg-brass text-noir' : 'hover:text-white'"
+                            class="px-2 py-1 rounded-lg transition" title="標準字體">A</button>
+                    <button @click="setFontScale('large')" 
+                            :class="fontScale === 'large' ? 'bg-brass text-noir' : 'hover:text-white'"
+                            class="px-2 py-1 rounded-lg transition" title="放大字體">A+</button>
+                    <button @click="setFontScale('xlarge')" 
+                            :class="fontScale === 'xlarge' ? 'bg-brass text-noir' : 'hover:text-white'"
+                            class="px-2 py-1 rounded-lg transition" title="特大字體">A++</button>
                 </div>
-                <button @click="activeTab = 'mysteries'" class="px-3 py-1.5 bg-brass hover:bg-brassLight text-noir text-xs font-bold rounded-lg transition active:scale-95 flex items-center gap-1.5 shadow">
-                    <i class="fa-solid fa-key text-[11px]"></i>
-                    <span>關主祕笈</span>
+
+                <button @click="activeTab = 'mysteries'" class="px-3.5 py-1.5 bg-brass hover:bg-brassLight text-noir text-xs sm:text-sm font-bold rounded-xl transition active:scale-95 flex items-center gap-1.5 shadow">
+                    <i class="fa-solid fa-key text-xs"></i>
+                    <span class="hidden sm:inline">關主祕笈</span>
+                    <span class="sm:hidden">祕笈</span>
                 </button>
             </div>
         </div>
@@ -110,103 +146,103 @@
 
         <!-- Case Hero Banner: The Detective Briefing -->
         <section class="relative bg-noir rounded-3xl overflow-hidden shadow-2xl border border-slate-800 text-slate-100 p-6 sm:p-8">
-            <div class="absolute -right-10 -bottom-10 opacity-10 text-slate-100 text-9xl pointer-events-none select-none">
+            <div class="absolute -right-8 -bottom-8 opacity-10 text-slate-100 text-9xl pointer-events-none select-none">
                 <i class="fa-solid fa-fingerprint"></i>
             </div>
             
             <div class="relative z-10 space-y-4">
                 <div class="flex flex-wrap items-center justify-between gap-2 border-b border-slate-800 pb-3">
                     <div class="flex items-center space-x-2">
-                        <span class="px-2.5 py-0.5 bg-waxCrimson text-white text-[10px] font-mono font-bold tracking-wider rounded uppercase">Classified Dossier</span>
-                        <span class="text-xs text-slate-400 font-mono">Date: 2026.10 ｜ 2 Days 1 Night</span>
+                        <span class="px-3 py-1 bg-waxCrimson text-white text-xs font-mono font-bold tracking-wider rounded uppercase">Classified Dossier</span>
+                        <span class="text-xs sm:text-sm text-slate-400 font-mono">Date: 2026.10 ｜ 2 Days 1 Night</span>
                     </div>
-                    <div class="flex items-center space-x-2 text-xs text-slate-400">
+                    <div class="flex items-center space-x-2 text-xs sm:text-sm text-slate-400">
                         <i class="fa-solid fa-location-dot text-brass"></i>
                         <span>台北 ➔ 台中 ➔ 后豐東豐</span>
                     </div>
                 </div>
 
-                <div class="space-y-2">
+                <div class="space-y-2.5">
                     <h1 class="font-serif text-2xl sm:text-4xl font-black text-slate-100 tracking-tight leading-snug">
                         台中名偵探家庭解謎手冊：<br>
                         <span class="text-transparent bg-clip-text bg-gradient-to-r from-brass via-amber-200 to-emerald-300 font-serif">佳恩 × 芊瑾 現場破案實錄</span>
                     </h1>
-                    <p class="text-slate-300 text-xs sm:text-sm font-light leading-relaxed max-w-3xl">
+                    <p class="text-slate-300 text-sm sm:text-base font-normal leading-relaxed max-w-3xl">
                         這是一份結合「柯南名偵探風格、生活科學奧祕、百年鐵道歷史與實地觀察」的二天一夜家庭專屬行動手冊。每到一個行程節點，爸爸（關主）依祕笈出題，由國二的佳恩（邏輯推理）與小六的芊瑾（敏銳觀察）抽絲剝繭現場破案！
                     </p>
                 </div>
 
                 <!-- Detective Agents Roster -->
-                <div class="grid grid-cols-3 gap-2.5 sm:gap-4 pt-2">
-                    <div class="bg-noirCard/80 border border-slate-800 rounded-xl p-3 flex items-center space-x-2.5">
-                        <div class="w-8 h-8 rounded-full bg-brass/20 text-brass flex items-center justify-center font-bold text-xs shrink-0">
+                <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 pt-2">
+                    <div class="bg-noirCard border border-slate-800 rounded-2xl p-3.5 flex items-center space-x-3">
+                        <div class="w-10 h-10 rounded-full bg-brass/20 text-brass flex items-center justify-center font-bold text-base shrink-0">
                             <i class="fa-solid fa-user-tie"></i>
                         </div>
                         <div class="min-w-0">
-                            <div class="text-[10px] text-slate-400 font-mono">關主 / 司令官</div>
-                            <div class="font-bold text-xs text-slate-100 truncate">爸爸 Ben</div>
+                            <div class="text-xs text-slate-400 font-mono font-medium">關主 / 司令官</div>
+                            <div class="font-bold text-sm sm:text-base text-slate-100 truncate">爸爸 Ben</div>
                         </div>
                     </div>
 
-                    <div class="bg-noirCard/80 border border-slate-800 rounded-xl p-3 flex items-center space-x-2.5">
-                        <div class="w-8 h-8 rounded-full bg-waxCrimson/20 text-waxLight flex items-center justify-center font-bold text-xs shrink-0">
+                    <div class="bg-noirCard border border-slate-800 rounded-2xl p-3.5 flex items-center space-x-3">
+                        <div class="w-10 h-10 rounded-full bg-waxCrimson/20 text-waxLight flex items-center justify-center font-bold text-base shrink-0">
                             <i class="fa-solid fa-brain"></i>
                         </div>
                         <div class="min-w-0">
-                            <div class="text-[10px] text-slate-400 font-mono">邏輯科學偵探</div>
-                            <div class="font-bold text-xs text-slate-100 truncate">佳恩 (國二/13歲)</div>
+                            <div class="text-xs text-slate-400 font-mono font-medium">邏輯科學偵探</div>
+                            <div class="font-bold text-sm sm:text-base text-slate-100 truncate">佳恩 (國二/13歲)</div>
                         </div>
                     </div>
 
-                    <div class="bg-noirCard/80 border border-slate-800 rounded-xl p-3 flex items-center space-x-2.5">
-                        <div class="w-8 h-8 rounded-full bg-emerald-900/30 text-emerald-400 flex items-center justify-center font-bold text-xs shrink-0">
+                    <div class="bg-noirCard border border-slate-800 rounded-2xl p-3.5 flex items-center space-x-3">
+                        <div class="w-10 h-10 rounded-full bg-emerald-900/30 text-emerald-400 flex items-center justify-center font-bold text-base shrink-0">
                             <i class="fa-solid fa-eye"></i>
                         </div>
                         <div class="min-w-0">
-                            <div class="text-[10px] text-slate-400 font-mono">敏銳觀察偵探</div>
-                            <div class="font-bold text-xs text-slate-100 truncate">芊瑾 (小六/11歲)</div>
+                            <div class="text-xs text-slate-400 font-mono font-medium">敏銳觀察偵探</div>
+                            <div class="font-bold text-sm sm:text-base text-slate-100 truncate">芊瑾 (小六/11歲)</div>
                         </div>
                     </div>
                 </div>
 
-                <!-- Quick Solved Progress Bar -->
+                <!-- Solved Progress Bar -->
                 <div class="pt-2">
-                    <div class="flex justify-between items-center text-xs font-mono mb-1.5">
-                        <span class="text-slate-400">總任務破解進度 (6 大謎題關卡)</span>
-                        <span class="text-brass font-bold" x-text="Math.round((solvedCount / 6) * 100) + '% COMPLETED'"></span>
+                    <div class="flex justify-between items-center text-xs sm:text-sm font-mono mb-2">
+                        <span class="text-slate-300 font-medium">破案進度 (6 大謎題關卡)：</span>
+                        <span class="text-brass font-bold text-sm" x-text="solvedCount + ' / 6 關 (' + Math.round((solvedCount / 6) * 100) + '%)'"></span>
                     </div>
-                    <div class="w-full h-2 bg-slate-800 rounded-full overflow-hidden">
-                        <div class="h-full bg-gradient-to-r from-brass to-emerald-400 transition-all duration-500 rounded-full" :style="'width: ' + (solvedCount / 6 * 100) + '%'"></div>
+                    <div class="w-full h-3 bg-slate-800 rounded-full overflow-hidden p-0.5 border border-slate-700">
+                        <div class="h-full bg-gradient-to-r from-brass via-amber-300 to-emerald-400 transition-all duration-500 rounded-full" :style="'width: ' + (solvedCount / 6 * 100) + '%'"></div>
                     </div>
                 </div>
             </div>
         </section>
 
-        <!-- Navigation Tabs Bar (File Folder Style) -->
-        <div class="flex overflow-x-auto hide-scrollbar border-b border-slate-300 space-x-1.5 pt-2">
+        <!-- Navigation Tabs Bar -->
+        <div class="flex overflow-x-auto hide-scrollbar border-b border-slate-300 space-x-2 pt-1">
             <button @click="activeTab = 'dossier'" 
-                    :class="activeTab === 'dossier' ? 'bg-white border-t-2 border-brass text-noir font-bold shadow-sm' : 'bg-slate-200/80 text-slate-600 hover:bg-slate-200'"
-                    class="px-4 py-2.5 rounded-t-xl text-xs flex items-center space-x-2 shrink-0 transition">
+                    :class="activeTab === 'dossier' ? 'bg-white border-t-2 border-brass text-noir font-bold shadow-sm' : 'bg-slate-200/80 text-slate-700 hover:bg-slate-200'"
+                    class="px-4 py-3 rounded-t-xl text-sm sm:text-base flex items-center space-x-2 shrink-0 transition">
                 <i class="fa-solid fa-folder-open text-brass"></i>
-                <span>行動時程與路線 (Itinerary)</span>
+                <span>行動時程與路線</span>
             </button>
             <button @click="activeTab = 'mysteries'" 
-                    :class="activeTab === 'mysteries' ? 'bg-white border-t-2 border-waxCrimson text-noir font-bold shadow-sm' : 'bg-slate-200/80 text-slate-600 hover:bg-slate-200'"
-                    class="px-4 py-2.5 rounded-t-xl text-xs flex items-center space-x-2 shrink-0 transition">
+                    :class="activeTab === 'mysteries' ? 'bg-white border-t-2 border-waxCrimson text-noir font-bold shadow-sm' : 'bg-slate-200/80 text-slate-700 hover:bg-slate-200'"
+                    class="px-4 py-3 rounded-t-xl text-sm sm:text-base flex items-center space-x-2 shrink-0 transition">
                 <i class="fa-solid fa-user-secret text-waxCrimson"></i>
-                <span>關主祕笈全集 (Puzzles)</span>
+                <span>關主祕笈全集</span>
             </button>
             <button @click="activeTab = 'food'" 
-                    :class="activeTab === 'food' ? 'bg-white border-t-2 border-emerald-600 text-noir font-bold shadow-sm' : 'bg-slate-200/80 text-slate-600 hover:bg-slate-200'"
-                    class="px-4 py-2.5 rounded-t-xl text-xs flex items-center space-x-2 shrink-0 transition">
+                    :class="activeTab === 'food' ? 'bg-white border-t-2 border-emerald-600 text-noir font-bold shadow-sm' : 'bg-slate-200/80 text-slate-700 hover:bg-slate-200'"
+                    class="px-4 py-3 rounded-t-xl text-sm sm:text-base flex items-center space-x-2 shrink-0 transition">
                 <i class="fa-solid fa-utensils text-emerald-600"></i>
-                <span>補給站名冊 (Food Intel)</span>
+                <span>補給站名冊</span>
             </button>
             <button @click="activeTab = 'prep'" 
-                    :class="activeTab === 'prep' ? 'bg-white border-t-2 border-indigo-600 text-noir font-bold shadow-sm' : 'bg-slate-200/80 text-slate-600 hover:bg-slate-200'"
-                    class="px-4 py-2.5 rounded-t-xl text-xs flex items-center space-x-2 shrink-0 transition">
+                    :class="activeTab === 'prep' ? 'bg-white border-t-2 border-indigo-600 text-noir font-bold shadow-sm' : 'bg-slate-200/80 text-slate-700 hover:bg-slate-200'"
+                    class="px-4 py-3 rounded-t-xl text-sm sm:text-base flex items-center space-x-2 shrink-0 transition">
                 <i class="fa-solid fa-clipboard-check text-indigo-600"></i>
-                <span>出勤裝備清單 (Field Gear)</span>
+                <span>出勤裝備清單</span>
             </button>
         </div>
 
@@ -216,123 +252,124 @@
         <div x-show="activeTab === 'dossier'" x-transition class="space-y-6">
 
             <!-- Day Switcher -->
-            <div class="flex items-center justify-between bg-white p-3 rounded-2xl shadow-sm border border-slate-200">
+            <div class="flex flex-col sm:flex-row sm:items-center justify-between bg-white p-3.5 rounded-2xl shadow-sm border border-slate-200 gap-3">
                 <div class="flex space-x-2">
                     <button @click="selectedDay = 1"
-                            :class="selectedDay === 1 ? 'bg-noir text-slate-100 shadow' : 'bg-slate-100 text-slate-600 hover:bg-slate-200'"
-                            class="px-3.5 py-1.5 rounded-xl text-xs font-bold transition flex items-center gap-1.5 active:scale-95">
+                            :class="selectedDay === 1 ? 'bg-noir text-slate-100 shadow' : 'bg-slate-100 text-slate-700 hover:bg-slate-200'"
+                            class="px-4 py-2.5 rounded-xl text-sm sm:text-base font-bold transition flex items-center gap-2 active:scale-95">
                         <i class="fa-solid fa-moon text-brass"></i>
                         <span>D1 週四傍晚（抵達與夜探）</span>
                     </button>
                     <button @click="selectedDay = 2"
-                            :class="selectedDay === 2 ? 'bg-noir text-slate-100 shadow' : 'bg-slate-100 text-slate-600 hover:bg-slate-200'"
-                            class="px-3.5 py-1.5 rounded-xl text-xs font-bold transition flex items-center gap-1.5 active:scale-95">
+                            :class="selectedDay === 2 ? 'bg-noir text-slate-100 shadow' : 'bg-slate-100 text-slate-700 hover:bg-slate-200'"
+                            class="px-4 py-2.5 rounded-xl text-sm sm:text-base font-bold transition flex items-center gap-2 active:scale-95">
                         <i class="fa-solid fa-sun text-brass"></i>
                         <span>D2 週五全日（破案大作戰）</span>
                     </button>
                 </div>
-                <div class="text-[11px] font-mono text-slate-500 hidden sm:block">
-                    點擊各節點雙地圖一鍵開啟
+                <div class="text-xs sm:text-sm font-medium text-slate-500 flex items-center gap-1.5">
+                    <i class="fa-solid fa-circle-info text-brass"></i>
+                    <span>各卡片皆附 Google 與 Apple 雙地圖按鈕</span>
                 </div>
             </div>
 
             <!-- Day 1 Content -->
-            <div x-show="selectedDay === 1" class="space-y-4">
+            <div x-show="selectedDay === 1" class="space-y-5">
                 
                 <!-- Notice Alert: Alignment on 20:00 closing -->
-                <div class="bg-amber-50 border-l-4 border-brass p-4 rounded-r-2xl shadow-sm text-xs space-y-1">
-                    <div class="font-bold text-amber-900 flex items-center gap-1.5">
-                        <i class="fa-solid fa-triangle-exclamation text-brass"></i>
+                <div class="bg-amber-50 border-l-4 border-brass p-4 sm:p-5 rounded-r-2xl shadow-sm text-sm sm:text-base space-y-2">
+                    <div class="font-bold text-amber-950 flex items-center gap-2 text-base sm:text-lg">
+                        <i class="fa-solid fa-triangle-exclamation text-brass text-lg"></i>
                         <span>關鍵時間對齊警告：PRESERVE 惠中店 20:00 打烊</span>
                     </div>
-                    <p class="text-amber-800 leading-relaxed">
+                    <p class="text-amber-900 leading-relaxed font-normal">
                         週四台北開車出發建議於 <strong>17:15～17:30</strong> 啟程，下中港交流道直達門市（約 19:40 抵達門市挑選天然酸種歐包當翌日早餐）。買妥後車子直接駛入斜對面僅 180 公尺的<strong>日月千喜地下停車場 Check-in</strong>，動線完美無縫！
                     </p>
                 </div>
 
                 <!-- Spot Cards Day 1 -->
-                <div class="space-y-4">
+                <div class="space-y-5">
                     <template x-for="(spot, idx) in day1Spots" :key="idx">
-                        <article class="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden card-hover transition">
-                            <div class="p-5 sm:p-6 space-y-3">
+                        <article class="bg-white rounded-3xl border border-slate-200 shadow-sm overflow-hidden card-hover transition">
+                            <div class="p-5 sm:p-7 space-y-4">
                                 
                                 <!-- Card Header -->
                                 <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
                                     <div class="flex items-center space-x-3">
-                                        <div class="px-2.5 py-1 bg-noir text-brass font-mono font-bold text-xs rounded-lg shrink-0" x-text="spot.time"></div>
+                                        <div class="px-3 py-1.5 bg-noir text-brass font-mono font-bold text-sm sm:text-base rounded-xl shrink-0" x-text="spot.time"></div>
                                         <div class="flex items-center gap-2 flex-wrap">
-                                            <h3 class="font-serif font-black text-slate-900 text-base sm:text-lg" x-text="spot.title"></h3>
+                                            <h3 class="font-serif font-black text-slate-900 text-lg sm:text-2xl" x-text="spot.title"></h3>
                                             <template x-if="spot.badge">
-                                                <span class="stamp-badge" x-text="spot.badge"></span>
+                                                <span class="stamp-badge text-xs sm:text-sm" x-text="spot.badge"></span>
                                             </template>
                                         </div>
                                     </div>
 
                                     <!-- Dual Maps Buttons (Google Maps + Apple Maps) -->
-                                    <div class="flex items-center gap-2 shrink-0">
+                                    <div class="flex items-center gap-2.5 shrink-0 pt-1 sm:pt-0">
                                         <button @click="openGoogleMap(spot)" 
-                                                class="touch-btn px-3 py-1.5 bg-slate-900 hover:bg-slate-800 text-white transition flex items-center space-x-1.5 text-xs font-bold rounded-xl shadow active:scale-95"
+                                                class="touch-btn px-4 py-2 bg-slate-900 hover:bg-slate-800 text-white transition flex items-center space-x-2 text-sm sm:text-base font-bold rounded-xl shadow active:scale-95"
                                                 title="在 Google Maps 開啟">
                                             <i class="fa-solid fa-location-dot text-emerald-400"></i>
                                             <span>Google 地圖</span>
                                         </button>
                                         <button @click="openAppleMap(spot)" 
-                                                class="touch-btn px-3 py-1.5 bg-slate-100 hover:bg-slate-200 text-slate-900 transition flex items-center space-x-1.5 text-xs font-bold rounded-xl border border-slate-300 shadow-sm active:scale-95"
+                                                class="touch-btn px-4 py-2 bg-slate-100 hover:bg-slate-200 text-slate-900 transition flex items-center space-x-2 text-sm sm:text-base font-bold rounded-xl border border-slate-300 shadow-sm active:scale-95"
                                                 title="在 Apple Maps 開啟">
-                                            <i class="fa-brands fa-apple text-slate-900 text-sm"></i>
+                                            <i class="fa-brands fa-apple text-slate-900 text-base"></i>
                                             <span>Apple 地圖</span>
                                         </button>
                                     </div>
                                 </div>
 
                                 <!-- Card Context Desc -->
-                                <p class="text-xs sm:text-sm text-slate-600 leading-relaxed" x-text="spot.desc"></p>
+                                <p class="text-sm sm:text-base text-slate-700 leading-relaxed font-normal" x-text="spot.desc"></p>
 
                                 <!-- Detective Quiz Dossier Component -->
                                 <template x-if="spot.puzzle">
-                                    <div class="rounded-xl border border-brass/40 bg-gradient-to-br from-parchment to-parchmentDark p-4 space-y-2.5 shadow-inner">
-                                        <div class="flex items-center justify-between border-b border-brass/20 pb-2">
-                                            <span class="text-xs font-mono font-bold text-waxCrimson flex items-center gap-1.5">
+                                    <div class="rounded-2xl border-2 border-brass/50 bg-gradient-to-br from-parchment to-parchmentDark p-5 sm:p-6 space-y-3.5 shadow-md">
+                                        <div class="flex items-center justify-between border-b border-brass/30 pb-2.5">
+                                            <span class="text-sm sm:text-base font-mono font-bold text-waxCrimson flex items-center gap-2">
                                                 <i class="fa-solid fa-magnifying-glass"></i>
                                                 <span x-text="'謎題代號：【' + spot.puzzle.title + '】'"></span>
                                             </span>
-                                            <button @click="togglePuzzle(spot.puzzle.id)" class="text-xs font-bold text-slate-700 hover:text-waxCrimson flex items-center gap-1">
+                                            <button @click="togglePuzzle(spot.puzzle.id)" class="text-sm font-bold text-slate-800 hover:text-waxCrimson flex items-center gap-1.5 py-1 px-2.5 rounded-lg bg-white/60 border border-brass/30">
                                                 <i :class="isPuzzleOpen(spot.puzzle.id) ? 'fa-solid fa-eye-slash' : 'fa-solid fa-eye'"></i>
                                                 <span x-text="isPuzzleOpen(spot.puzzle.id) ? '收合謎底' : '查看關主解密 ➔'"></span>
                                             </button>
                                         </div>
 
-                                        <div class="text-xs text-slate-800 leading-relaxed">
-                                            <strong class="text-slate-900 block mb-1">🕵️ 爸爸出題（關主現場發問）：</strong>
-                                            <p x-text="spot.puzzle.question" class="pl-2 border-l-2 border-brass/50 text-slate-700"></p>
+                                        <div class="space-y-1.5">
+                                            <strong class="text-slate-900 block text-base sm:text-lg font-bold">🕵️ 爸爸出題（關主現場發問）：</strong>
+                                            <p x-text="spot.puzzle.question" class="pl-3 border-l-4 border-brass text-slate-800 text-sm sm:text-base leading-relaxed font-medium"></p>
                                         </div>
 
-                                        <div class="text-[11px] text-amber-900 bg-amber-100/60 p-2 rounded-lg font-medium">
-                                            <strong>🔎 現場觀察線索：</strong> <span x-text="spot.puzzle.clue"></span>
+                                        <div class="text-xs sm:text-sm text-amber-950 bg-amber-100/70 p-3 rounded-xl font-medium border border-amber-200">
+                                            <strong class="text-amber-900">🔎 現場觀察線索：</strong> <span x-text="spot.puzzle.clue"></span>
                                         </div>
 
                                         <!-- Revealed Answer Drawer -->
-                                        <div x-show="isPuzzleOpen(spot.puzzle.id)" x-transition class="pt-3 border-t border-dashed border-brass/40 space-y-1.5">
+                                        <div x-show="isPuzzleOpen(spot.puzzle.id)" x-transition class="pt-3.5 border-t border-dashed border-brass/50 space-y-2">
                                             <div class="flex items-center justify-between">
-                                                <div class="text-xs font-bold text-emerald-800 flex items-center gap-1.5">
-                                                    <i class="fa-solid fa-circle-check text-emerald-600"></i>
+                                                <div class="text-sm sm:text-base font-bold text-emerald-800 flex items-center gap-2">
+                                                    <i class="fa-solid fa-circle-check text-emerald-600 text-base"></i>
                                                     <span x-text="'科學/歷史原理：' + spot.puzzle.principle"></span>
                                                 </div>
                                                 <button @click="markSolved(spot.puzzle.id)" 
                                                         :class="isSolved(spot.puzzle.id) ? 'bg-emerald-700 text-white' : 'bg-slate-200 text-slate-700'"
-                                                        class="px-2 py-0.5 rounded text-[10px] font-bold transition">
+                                                        class="px-3 py-1 rounded-lg text-xs sm:text-sm font-bold transition">
                                                     <span x-text="isSolved(spot.puzzle.id) ? '✓ 已破案' : '標記破案'"></span>
                                                 </button>
                                             </div>
-                                            <p class="text-xs text-slate-700 leading-relaxed pl-2 bg-white/70 p-2.5 rounded-lg border border-slate-200/80" x-text="spot.puzzle.answer"></p>
+                                            <p class="text-sm sm:text-base text-slate-800 leading-relaxed bg-white/80 p-3.5 rounded-xl border border-slate-200" x-text="spot.puzzle.answer"></p>
                                         </div>
                                     </div>
                                 </template>
 
                                 <!-- Practical Tip -->
                                 <template x-if="spot.tip">
-                                    <div class="text-xs text-slate-500 bg-slate-50 px-3 py-2 rounded-lg flex items-center gap-2 border border-slate-100">
-                                        <i class="fa-solid fa-lightbulb text-brass"></i>
+                                    <div class="text-xs sm:text-sm text-slate-600 bg-slate-50 px-4 py-2.5 rounded-xl flex items-center gap-2.5 border border-slate-200 font-medium">
+                                        <i class="fa-solid fa-lightbulb text-brass text-base"></i>
                                         <span x-text="spot.tip"></span>
                                     </div>
                                 </template>
@@ -344,96 +381,96 @@
             </div>
 
             <!-- Day 2 Content -->
-            <div x-show="selectedDay === 2" class="space-y-4">
+            <div x-show="selectedDay === 2" class="space-y-5">
                 
-                <div class="bg-gradient-to-r from-noir to-noirCard text-slate-100 p-4 rounded-2xl border border-slate-800 flex items-center justify-between">
-                    <div class="space-y-0.5">
-                        <span class="text-brass text-xs font-mono font-bold tracking-wider">FRIDAY MISSION SCHEDULE</span>
-                        <h4 class="font-serif font-black text-sm sm:text-base">週五精華全日：房內早餐 ➔ 歌劇院 ➔ 茶六 ➔ 鐵馬道大冒險</h4>
+                <div class="bg-gradient-to-r from-noir to-noirCard text-slate-100 p-5 rounded-3xl border border-slate-800 flex items-center justify-between">
+                    <div class="space-y-1">
+                        <span class="text-brass text-xs sm:text-sm font-mono font-bold tracking-wider">FRIDAY MISSION SCHEDULE</span>
+                        <h4 class="font-serif font-black text-base sm:text-xl">週五精華全日：房內早餐 ➔ 歌劇院 ➔ 茶六 ➔ 鐵馬道大冒險</h4>
                     </div>
-                    <span class="stamp-badge border-brass text-brass text-[9px]">4 MISSIONS</span>
+                    <span class="stamp-badge border-brass text-brass text-xs">4 MISSIONS</span>
                 </div>
 
                 <!-- Spot Cards Day 2 -->
-                <div class="space-y-4">
+                <div class="space-y-5">
                     <template x-for="(spot, idx) in day2Spots" :key="idx">
-                        <article class="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden card-hover transition">
-                            <div class="p-5 sm:p-6 space-y-3">
+                        <article class="bg-white rounded-3xl border border-slate-200 shadow-sm overflow-hidden card-hover transition">
+                            <div class="p-5 sm:p-7 space-y-4">
                                 
                                 <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
                                     <div class="flex items-center space-x-3">
-                                        <div class="px-2.5 py-1 bg-noir text-brass font-mono font-bold text-xs rounded-lg shrink-0" x-text="spot.time"></div>
+                                        <div class="px-3 py-1.5 bg-noir text-brass font-mono font-bold text-sm sm:text-base rounded-xl shrink-0" x-text="spot.time"></div>
                                         <div class="flex items-center gap-2 flex-wrap">
-                                            <h3 class="font-serif font-black text-slate-900 text-base sm:text-lg" x-text="spot.title"></h3>
+                                            <h3 class="font-serif font-black text-slate-900 text-lg sm:text-2xl" x-text="spot.title"></h3>
                                             <template x-if="spot.badge">
-                                                <span class="stamp-badge" x-text="spot.badge"></span>
+                                                <span class="stamp-badge text-xs sm:text-sm" x-text="spot.badge"></span>
                                             </template>
                                         </div>
                                     </div>
 
                                     <!-- Dual Maps Buttons -->
-                                    <div class="flex items-center gap-2 shrink-0">
+                                    <div class="flex items-center gap-2.5 shrink-0 pt-1 sm:pt-0">
                                         <button @click="openGoogleMap(spot)" 
-                                                class="touch-btn px-3 py-1.5 bg-slate-900 hover:bg-slate-800 text-white transition flex items-center space-x-1.5 text-xs font-bold rounded-xl shadow active:scale-95"
+                                                class="touch-btn px-4 py-2 bg-slate-900 hover:bg-slate-800 text-white transition flex items-center space-x-2 text-sm sm:text-base font-bold rounded-xl shadow active:scale-95"
                                                 title="在 Google Maps 開啟">
                                             <i class="fa-solid fa-location-dot text-emerald-400"></i>
                                             <span>Google 地圖</span>
                                         </button>
                                         <button @click="openAppleMap(spot)" 
-                                                class="touch-btn px-3 py-1.5 bg-slate-100 hover:bg-slate-200 text-slate-900 transition flex items-center space-x-1.5 text-xs font-bold rounded-xl border border-slate-300 shadow-sm active:scale-95"
+                                                class="touch-btn px-4 py-2 bg-slate-100 hover:bg-slate-200 text-slate-900 transition flex items-center space-x-2 text-sm sm:text-base font-bold rounded-xl border border-slate-300 shadow-sm active:scale-95"
                                                 title="在 Apple Maps 開啟">
-                                            <i class="fa-brands fa-apple text-slate-900 text-sm"></i>
+                                            <i class="fa-brands fa-apple text-slate-900 text-base"></i>
                                             <span>Apple 地圖</span>
                                         </button>
                                     </div>
                                 </div>
 
-                                <p class="text-xs sm:text-sm text-slate-600 leading-relaxed" x-text="spot.desc"></p>
+                                <p class="text-sm sm:text-base text-slate-700 leading-relaxed font-normal" x-text="spot.desc"></p>
 
                                 <!-- Puzzle Section for Day 2 -->
                                 <template x-if="spot.puzzle">
-                                    <div class="rounded-xl border border-brass/40 bg-gradient-to-br from-parchment to-parchmentDark p-4 space-y-2.5 shadow-inner">
-                                        <div class="flex items-center justify-between border-b border-brass/20 pb-2">
-                                            <span class="text-xs font-mono font-bold text-waxCrimson flex items-center gap-1.5">
+                                    <div class="rounded-2xl border-2 border-brass/50 bg-gradient-to-br from-parchment to-parchmentDark p-5 sm:p-6 space-y-3.5 shadow-md">
+                                        <div class="flex items-center justify-between border-b border-brass/30 pb-2.5">
+                                            <span class="text-sm sm:text-base font-mono font-bold text-waxCrimson flex items-center gap-2">
                                                 <i class="fa-solid fa-magnifying-glass"></i>
                                                 <span x-text="'謎題代號：【' + spot.puzzle.title + '】'"></span>
                                             </span>
-                                            <button @click="togglePuzzle(spot.puzzle.id)" class="text-xs font-bold text-slate-700 hover:text-waxCrimson flex items-center gap-1">
+                                            <button @click="togglePuzzle(spot.puzzle.id)" class="text-sm font-bold text-slate-800 hover:text-waxCrimson flex items-center gap-1.5 py-1 px-2.5 rounded-lg bg-white/60 border border-brass/30">
                                                 <i :class="isPuzzleOpen(spot.puzzle.id) ? 'fa-solid fa-eye-slash' : 'fa-solid fa-eye'"></i>
                                                 <span x-text="isPuzzleOpen(spot.puzzle.id) ? '收合謎底' : '查看關主解密 ➔'"></span>
                                             </button>
                                         </div>
 
-                                        <div class="text-xs text-slate-800 leading-relaxed">
-                                            <strong class="text-slate-900 block mb-1">🕵️ 爸爸出題（關主現場發問）：</strong>
-                                            <p x-text="spot.puzzle.question" class="pl-2 border-l-2 border-brass/50 text-slate-700 whitespace-pre-line"></p>
+                                        <div class="space-y-1.5">
+                                            <strong class="text-slate-900 block text-base sm:text-lg font-bold">🕵️ 爸爸出題（關主現場發問）：</strong>
+                                            <p x-text="spot.puzzle.question" class="pl-3 border-l-4 border-brass text-slate-800 text-sm sm:text-base leading-relaxed font-medium whitespace-pre-line"></p>
                                         </div>
 
-                                        <div class="text-[11px] text-amber-900 bg-amber-100/60 p-2 rounded-lg font-medium">
-                                            <strong>🔎 現場觀察線索：</strong> <span x-text="spot.puzzle.clue"></span>
+                                        <div class="text-xs sm:text-sm text-amber-950 bg-amber-100/70 p-3 rounded-xl font-medium border border-amber-200">
+                                            <strong class="text-amber-900">🔎 現場觀察線索：</strong> <span x-text="spot.puzzle.clue"></span>
                                         </div>
 
                                         <!-- Revealed Answer Drawer -->
-                                        <div x-show="isPuzzleOpen(spot.puzzle.id)" x-transition class="pt-3 border-t border-dashed border-brass/40 space-y-1.5">
+                                        <div x-show="isPuzzleOpen(spot.puzzle.id)" x-transition class="pt-3.5 border-t border-dashed border-brass/50 space-y-2">
                                             <div class="flex items-center justify-between">
-                                                <div class="text-xs font-bold text-emerald-800 flex items-center gap-1.5">
-                                                    <i class="fa-solid fa-circle-check text-emerald-600"></i>
+                                                <div class="text-sm sm:text-base font-bold text-emerald-800 flex items-center gap-2">
+                                                    <i class="fa-solid fa-circle-check text-emerald-600 text-base"></i>
                                                     <span x-text="'科學/歷史原理：' + spot.puzzle.principle"></span>
                                                 </div>
                                                 <button @click="markSolved(spot.puzzle.id)" 
                                                         :class="isSolved(spot.puzzle.id) ? 'bg-emerald-700 text-white' : 'bg-slate-200 text-slate-700'"
-                                                        class="px-2 py-0.5 rounded text-[10px] font-bold transition">
+                                                        class="px-3 py-1 rounded-lg text-xs sm:text-sm font-bold transition">
                                                     <span x-text="isSolved(spot.puzzle.id) ? '✓ 已破案' : '標記破案'"></span>
                                                 </button>
                                             </div>
-                                            <p class="text-xs text-slate-700 leading-relaxed pl-2 bg-white/70 p-2.5 rounded-lg border border-slate-200/80 whitespace-pre-line" x-text="spot.puzzle.answer"></p>
+                                            <p class="text-sm sm:text-base text-slate-800 leading-relaxed bg-white/80 p-3.5 rounded-xl border border-slate-200 whitespace-pre-line" x-text="spot.puzzle.answer"></p>
                                         </div>
                                     </div>
                                 </template>
 
                                 <template x-if="spot.tip">
-                                    <div class="text-xs text-slate-500 bg-slate-50 px-3 py-2 rounded-lg flex items-center gap-2 border border-slate-100">
-                                        <i class="fa-solid fa-lightbulb text-brass"></i>
+                                    <div class="text-xs sm:text-sm text-slate-600 bg-slate-50 px-4 py-2.5 rounded-xl flex items-center gap-2.5 border border-slate-200 font-medium">
+                                        <i class="fa-solid fa-lightbulb text-brass text-base"></i>
                                         <span x-text="spot.tip"></span>
                                     </div>
                                 </template>
@@ -450,68 +487,68 @@
         <!-- ============================================== -->
         <!-- TAB 2: MYSTERIES (關主祕笈全集) -->
         <!-- ============================================== -->
-        <div x-show="activeTab === 'mysteries'" x-transition class="space-y-5">
-            <div class="bg-noir text-slate-100 p-6 rounded-3xl border border-slate-800 shadow-xl space-y-3">
+        <div x-show="activeTab === 'mysteries'" x-transition class="space-y-6">
+            <div class="bg-noir text-slate-100 p-6 sm:p-7 rounded-3xl border border-slate-800 shadow-xl space-y-3">
                 <div class="flex items-center justify-between">
-                    <div class="flex items-center space-x-3">
-                        <div class="w-10 h-10 rounded-2xl bg-waxCrimson flex items-center justify-center text-white text-lg shadow">
+                    <div class="flex items-center space-x-3.5">
+                        <div class="w-12 h-12 rounded-2xl bg-waxCrimson flex items-center justify-center text-white text-xl shadow">
                             <i class="fa-solid fa-user-secret"></i>
                         </div>
                         <div>
-                            <h2 class="font-serif font-black text-xl text-slate-100">名偵探解謎總卷（關主現場操作祕笈）</h2>
-                            <p class="text-xs text-slate-400 font-mono">Top Secret Briefing Guide for Daddy Ben</p>
+                            <h2 class="font-serif font-black text-xl sm:text-2xl text-slate-100">名偵探解謎總卷（關主現場操作祕笈）</h2>
+                            <p class="text-xs sm:text-sm text-slate-400 font-mono">Top Secret Briefing Guide for Daddy Ben</p>
                         </div>
                     </div>
                     <span class="stamp-badge border-brass text-brass hidden sm:inline-block">OFFICIAL MANUAL</span>
                 </div>
-                <p class="text-xs text-slate-300 leading-relaxed">
+                <p class="text-sm sm:text-base text-slate-300 leading-relaxed font-normal">
                     在各個行程節點直接打開本分頁，照著卡片出題。等待兩位小偵探觀察提出假設後，點擊「揭曉謎底」解開背後的自然物理與歷史原理！全部通關後至 200 days 領取終點合格盲盒。
                 </p>
             </div>
 
             <!-- Puzzle Cards Grid -->
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
                 <template x-for="(puzzle, idx) in allPuzzles" :key="idx">
-                    <div class="bg-white rounded-2xl border border-slate-200 p-5 shadow-sm space-y-3 flex flex-col justify-between card-hover">
-                        <div class="space-y-2.5">
-                            <div class="flex items-center justify-between border-b border-slate-100 pb-2">
-                                <span class="px-2 py-0.5 bg-slate-900 text-brass text-[10px] font-mono font-bold rounded" x-text="puzzle.stage"></span>
-                                <span class="text-xs text-slate-500 font-bold" x-text="puzzle.location"></span>
+                    <div class="bg-white rounded-3xl border border-slate-200 p-6 shadow-sm space-y-4 flex flex-col justify-between card-hover">
+                        <div class="space-y-3">
+                            <div class="flex items-center justify-between border-b border-slate-100 pb-2.5">
+                                <span class="px-3 py-1 bg-slate-900 text-brass text-xs font-mono font-bold rounded-lg" x-text="puzzle.stage"></span>
+                                <span class="text-xs sm:text-sm text-slate-600 font-bold" x-text="puzzle.location"></span>
                             </div>
 
-                            <h3 class="font-serif font-black text-base text-slate-900 flex items-center gap-1.5">
-                                <i class="fa-solid fa-key text-brass text-xs"></i>
+                            <h3 class="font-serif font-black text-lg sm:text-xl text-slate-900 flex items-center gap-2">
+                                <i class="fa-solid fa-key text-brass text-sm"></i>
                                 <span x-text="puzzle.title"></span>
                             </h3>
 
-                            <div class="text-xs text-slate-700 bg-parchment p-3 rounded-xl border border-slate-200/60 space-y-1">
-                                <div class="font-bold text-slate-900">🗣️ 關主提問：</div>
-                                <p class="text-slate-700 leading-relaxed whitespace-pre-line" x-text="puzzle.question"></p>
+                            <div class="text-sm sm:text-base text-slate-800 bg-parchment p-4 rounded-2xl border border-slate-200/80 space-y-1.5 font-medium">
+                                <div class="font-bold text-slate-900 text-sm sm:text-base">🗣️ 關主提問：</div>
+                                <p class="text-slate-800 leading-relaxed whitespace-pre-line" x-text="puzzle.question"></p>
                             </div>
 
-                            <div class="text-[11px] text-amber-900 bg-amber-50 p-2.5 rounded-lg border border-amber-200">
-                                <strong>🔎 現場觀察線索：</strong> <span x-text="puzzle.clue"></span>
+                            <div class="text-xs sm:text-sm text-amber-950 bg-amber-50 p-3 rounded-xl border border-amber-200 font-medium">
+                                <strong class="text-amber-900">🔎 現場觀察線索：</strong> <span x-text="puzzle.clue"></span>
                             </div>
                         </div>
 
                         <!-- Reveal Toggle -->
-                        <div class="pt-2 border-t border-slate-100 space-y-2">
+                        <div class="pt-3 border-t border-slate-100 space-y-2.5">
                             <div class="flex items-center justify-between">
-                                <button @click="puzzle.open = !puzzle.open" class="text-xs font-bold text-slate-700 hover:text-waxCrimson flex items-center gap-1 py-1">
+                                <button @click="puzzle.open = !puzzle.open" class="text-sm font-bold text-slate-800 hover:text-waxCrimson flex items-center gap-1.5 py-1">
                                     <i :class="puzzle.open ? 'fa-solid fa-eye-slash' : 'fa-solid fa-eye'"></i>
                                     <span x-text="puzzle.open ? '收合解密' : '點擊查看關主解密 ➔'"></span>
                                 </button>
                                 <button @click="markSolved(puzzle.id)" 
-                                        :class="isSolved(puzzle.id) ? 'bg-emerald-600 text-white' : 'bg-slate-100 text-slate-600'"
-                                        class="px-2.5 py-1 rounded-lg text-xs font-bold transition flex items-center gap-1">
-                                    <i class="fa-solid fa-check text-[10px]"></i>
+                                        :class="isSolved(puzzle.id) ? 'bg-emerald-600 text-white' : 'bg-slate-100 text-slate-700'"
+                                        class="px-3 py-1 rounded-xl text-xs sm:text-sm font-bold transition flex items-center gap-1.5">
+                                    <i class="fa-solid fa-check text-xs"></i>
                                     <span x-text="isSolved(puzzle.id) ? '已破案' : '標記破案'"></span>
                                 </button>
                             </div>
 
-                            <div x-show="puzzle.open" x-transition class="p-3 bg-emerald-50 rounded-xl border border-emerald-200 text-xs text-slate-800 space-y-1">
-                                <div class="font-bold text-emerald-800" x-text="'✨ 原理：' + puzzle.principle"></div>
-                                <p class="text-slate-700 leading-relaxed whitespace-pre-line text-[11px]" x-text="puzzle.answer"></p>
+                            <div x-show="puzzle.open" x-transition class="p-4 bg-emerald-50 rounded-2xl border border-emerald-200 text-sm sm:text-base text-slate-800 space-y-1.5">
+                                <div class="font-bold text-emerald-900" x-text="'✨ 原理：' + puzzle.principle"></div>
+                                <p class="text-slate-700 leading-relaxed whitespace-pre-line text-xs sm:text-sm" x-text="puzzle.answer"></p>
                             </div>
                         </div>
                     </div>
@@ -522,46 +559,46 @@
         <!-- ============================================== -->
         <!-- TAB 3: FOOD INTEL (補給站名冊) -->
         <!-- ============================================== -->
-        <div x-show="activeTab === 'food'" x-transition class="space-y-4">
-            <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm flex items-center justify-between">
+        <div x-show="activeTab === 'food'" x-transition class="space-y-5">
+            <div class="bg-white p-6 rounded-3xl border border-slate-200 shadow-sm flex items-center justify-between">
                 <div>
-                    <h2 class="font-serif font-black text-lg text-slate-900">偵探能量補給站名冊</h2>
-                    <p class="text-xs text-slate-500">純植歐包、備長炭串燒、炭烤土司、頂級燒肉與純白芋仔冰</p>
+                    <h2 class="font-serif font-black text-xl sm:text-2xl text-slate-900">偵探能量補給站名冊</h2>
+                    <p class="text-xs sm:text-sm text-slate-600 font-medium">純植歐包、備長炭串燒、炭烤土司、頂級燒肉與純白芋仔冰</p>
                 </div>
-                <i class="fa-solid fa-utensils text-brass text-xl"></i>
+                <i class="fa-solid fa-utensils text-brass text-2xl"></i>
             </div>
 
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
                 <template x-for="(food, idx) in foodList" :key="idx">
-                    <div class="bg-white rounded-2xl border border-slate-200 p-5 shadow-sm card-hover flex flex-col justify-between space-y-3">
-                        <div class="space-y-2">
+                    <div class="bg-white rounded-3xl border border-slate-200 p-6 shadow-sm card-hover flex flex-col justify-between space-y-4">
+                        <div class="space-y-2.5">
                             <div class="flex items-center justify-between">
-                                <span class="px-2.5 py-0.5 bg-slate-100 text-slate-700 text-[10px] font-mono font-bold rounded" x-text="food.category"></span>
-                                <span class="text-xs text-brass font-bold" x-text="food.timing"></span>
+                                <span class="px-3 py-1 bg-slate-100 text-slate-800 text-xs font-mono font-bold rounded-lg" x-text="food.category"></span>
+                                <span class="text-xs sm:text-sm text-brass font-bold" x-text="food.timing"></span>
                             </div>
 
-                            <h3 class="font-serif font-black text-lg text-slate-900" x-text="food.name"></h3>
-                            <div class="text-xs text-slate-500 flex items-center gap-1">
-                                <i class="fa-solid fa-map-pin text-waxCrimson text-[10px]"></i>
+                            <h3 class="font-serif font-black text-xl text-slate-900" x-text="food.name"></h3>
+                            <div class="text-xs sm:text-sm text-slate-600 flex items-center gap-1.5 font-medium">
+                                <i class="fa-solid fa-map-pin text-waxCrimson"></i>
                                 <span x-text="food.area"></span>
                             </div>
 
-                            <p class="text-xs text-slate-600 leading-relaxed" x-text="food.desc"></p>
+                            <p class="text-sm sm:text-base text-slate-700 leading-relaxed" x-text="food.desc"></p>
 
-                            <div class="p-2.5 bg-amber-50/80 rounded-xl border border-amber-200/60 text-xs text-amber-950 font-medium">
+                            <div class="p-3 bg-amber-50 rounded-2xl border border-amber-200 text-xs sm:text-sm text-amber-950 font-medium">
                                 <strong class="text-amber-900">⭐ 招牌必點：</strong> <span x-text="food.mustEat"></span>
                             </div>
                         </div>
 
                         <!-- Dual Maps Action -->
-                        <div class="pt-3 border-t border-slate-100 flex items-center justify-between gap-2">
-                            <span class="text-[11px] text-slate-400 font-mono" x-text="food.note"></span>
+                        <div class="pt-3 border-t border-slate-100 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                            <span class="text-xs text-slate-500 font-mono" x-text="food.note"></span>
                             <div class="flex items-center gap-2">
-                                <button @click="openGoogleMap(food)" class="px-3 py-1.5 bg-slate-900 hover:bg-slate-800 text-white text-xs font-bold rounded-xl shadow active:scale-95 flex items-center gap-1">
-                                    <i class="fa-solid fa-location-dot text-emerald-400 text-[10px]"></i> Google
+                                <button @click="openGoogleMap(food)" class="touch-btn px-3.5 py-1.5 bg-slate-900 hover:bg-slate-800 text-white text-xs sm:text-sm font-bold rounded-xl shadow active:scale-95 flex items-center gap-1.5">
+                                    <i class="fa-solid fa-location-dot text-emerald-400"></i> Google 地圖
                                 </button>
-                                <button @click="openAppleMap(food)" class="px-3 py-1.5 bg-slate-100 hover:bg-slate-200 text-slate-900 text-xs font-bold rounded-xl border border-slate-300 shadow-sm active:scale-95 flex items-center gap-1">
-                                    <i class="fa-brands fa-apple text-slate-900 text-xs"></i> Apple
+                                <button @click="openAppleMap(food)" class="touch-btn px-3.5 py-1.5 bg-slate-100 hover:bg-slate-200 text-slate-900 text-xs sm:text-sm font-bold rounded-xl border border-slate-300 shadow-sm active:scale-95 flex items-center gap-1.5">
+                                    <i class="fa-brands fa-apple text-slate-900 text-sm"></i> Apple 地圖
                                 </button>
                             </div>
                         </div>
@@ -573,23 +610,23 @@
         <!-- ============================================== -->
         <!-- TAB 4: PREP (出勤裝備與清單) -->
         <!-- ============================================== -->
-        <div x-show="activeTab === 'prep'" x-transition class="space-y-4">
-            <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm space-y-4">
+        <div x-show="activeTab === 'prep'" x-transition class="space-y-5">
+            <div class="bg-white p-6 sm:p-7 rounded-3xl border border-slate-200 shadow-sm space-y-5">
                 <div class="flex items-center justify-between border-b border-slate-100 pb-3">
                     <div>
-                        <h2 class="font-serif font-black text-lg text-slate-900">行前準備與通關祕技</h2>
-                        <p class="text-xs text-slate-500">電話預留、訂位時間、電輔車租借與破案彩蛋盲盒</p>
+                        <h2 class="font-serif font-black text-xl sm:text-2xl text-slate-900">行前準備與通關祕技</h2>
+                        <p class="text-xs sm:text-sm text-slate-600 font-medium">電話預留、訂位時間、電輔車租借與破案彩蛋盲盒</p>
                     </div>
-                    <i class="fa-solid fa-clipboard-check text-brass text-xl"></i>
+                    <i class="fa-solid fa-clipboard-check text-brass text-2xl"></i>
                 </div>
 
                 <!-- Strategic Reminders Box -->
-                <div class="bg-gradient-to-r from-noir to-noirCard text-slate-100 p-5 rounded-2xl space-y-2 border border-slate-800">
-                    <div class="flex items-center gap-2 text-brass font-bold text-xs uppercase tracking-wider font-mono">
+                <div class="bg-gradient-to-r from-noir to-noirCard text-slate-100 p-5 sm:p-6 rounded-2xl space-y-3 border border-slate-800">
+                    <div class="flex items-center gap-2 text-brass font-bold text-sm uppercase tracking-wider font-mono">
                         <i class="fa-solid fa-shield-halved"></i>
                         <span>關鍵行動備忘 (Tactical Reminders)</span>
                     </div>
-                    <ul class="text-xs text-slate-300 space-y-1.5 list-disc list-inside leading-relaxed">
+                    <ul class="text-sm sm:text-base text-slate-300 space-y-2 list-disc list-inside leading-relaxed">
                         <li><strong>PRESERVE 惠中店</strong>：週四營業至 20:00，出發若超過 17:30，請於當日下午致電 <code>(04) 2251-3858</code> 先預留酸種歐包與肉桂捲。</li>
                         <li><strong>日月千喜飯店</strong>：就在 PRESERVE 斜後方 180 公尺，買完麵包直接進地下停車場，房客享免費停車。</li>
                         <li><strong>週五早晨自製＋外送早餐</strong>：房內沖熱水壺咖啡配酸種歐包，亦可叫 Uber Eats「暮香炭烤土司」到一樓大廳。</li>
@@ -599,22 +636,22 @@
                 </div>
 
                 <!-- Checklist -->
-                <div class="space-y-2 pt-2">
-                    <h3 class="text-xs font-mono font-bold text-slate-400 uppercase tracking-wider">實體檢核打勾清單</h3>
+                <div class="space-y-3 pt-2">
+                    <h3 class="text-xs sm:text-sm font-mono font-bold text-slate-500 uppercase tracking-wider">實體檢核打勾清單</h3>
                     <template x-for="(item, idx) in checklist" :key="idx">
-                        <label class="flex items-start gap-3 p-3 rounded-xl bg-slate-50 hover:bg-slate-100 transition border border-slate-200 cursor-pointer">
-                            <input type="checkbox" x-model="item.done" class="mt-0.5 w-4 h-4 rounded text-brass focus:ring-brass shrink-0">
+                        <label class="flex items-start gap-3.5 p-4 rounded-2xl bg-slate-50 hover:bg-slate-100 transition border border-slate-200 cursor-pointer">
+                            <input type="checkbox" x-model="item.done" class="mt-1 w-5 h-5 rounded text-brass focus:ring-brass shrink-0">
                             <div class="flex-1">
-                                <div class="text-xs font-bold text-slate-900" :class="item.done ? 'line-through text-slate-400' : ''" x-text="item.title"></div>
-                                <div class="text-[11px] text-slate-500 mt-0.5" x-text="item.detail"></div>
+                                <div class="text-sm sm:text-base font-bold text-slate-900" :class="item.done ? 'line-through text-slate-400' : ''" x-text="item.title"></div>
+                                <div class="text-xs sm:text-sm text-slate-600 mt-1 font-normal" x-text="item.detail"></div>
                             </div>
                         </label>
                     </template>
                 </div>
 
                 <!-- Egg Reward -->
-                <div class="p-4 bg-emerald-50 rounded-xl border border-emerald-200 space-y-1 text-xs text-emerald-950">
-                    <div class="font-bold text-emerald-900 flex items-center gap-1.5">
+                <div class="p-5 bg-emerald-50 rounded-2xl border border-emerald-200 space-y-2 text-sm sm:text-base text-emerald-950">
+                    <div class="font-bold text-emerald-900 flex items-center gap-2 text-base sm:text-lg">
                         <i class="fa-solid fa-gift text-emerald-600"></i>
                         <span>🎁 終點柯南破案獎勵密技</span>
                     </div>
@@ -628,29 +665,29 @@
     </main>
 
     <!-- Bottom Mobile Quick Switcher Bar -->
-    <nav class="fixed bottom-0 left-0 right-0 z-50 bg-noir border-t border-slate-800 shadow-2xl px-2 py-1.5 flex justify-around items-center">
+    <nav class="fixed bottom-0 left-0 right-0 z-50 bg-noir border-t border-slate-800 shadow-2xl px-2 py-2 flex justify-around items-center backdrop-blur-lg bg-opacity-95">
         <button @click="activeTab = 'dossier'" 
                 :class="activeTab === 'dossier' ? 'text-brass font-bold' : 'text-slate-400'"
-                class="flex flex-col items-center p-1 text-[10px] transition">
-            <i class="fa-solid fa-route text-sm mb-0.5"></i>
+                class="flex flex-col items-center p-1 text-xs transition">
+            <i class="fa-solid fa-route text-base mb-1"></i>
             <span>行動時程</span>
         </button>
         <button @click="activeTab = 'mysteries'" 
                 :class="activeTab === 'mysteries' ? 'text-waxLight font-bold' : 'text-slate-400'"
-                class="flex flex-col items-center p-1 text-[10px] transition">
-            <i class="fa-solid fa-user-secret text-sm mb-0.5"></i>
+                class="flex flex-col items-center p-1 text-xs transition">
+            <i class="fa-solid fa-user-secret text-base mb-1"></i>
             <span>關主祕笈</span>
         </button>
         <button @click="activeTab = 'food'" 
                 :class="activeTab === 'food' ? 'text-emerald-400 font-bold' : 'text-slate-400'"
-                class="flex flex-col items-center p-1 text-[10px] transition">
-            <i class="fa-solid fa-bowl-food text-sm mb-0.5"></i>
+                class="flex flex-col items-center p-1 text-xs transition">
+            <i class="fa-solid fa-bowl-food text-base mb-1"></i>
             <span>補給名冊</span>
         </button>
         <button @click="activeTab = 'prep'" 
                 :class="activeTab === 'prep' ? 'text-indigo-400 font-bold' : 'text-slate-400'"
-                class="flex flex-col items-center p-1 text-[10px] transition">
-            <i class="fa-solid fa-list-check text-sm mb-0.5"></i>
+                class="flex flex-col items-center p-1 text-xs transition">
+            <i class="fa-solid fa-list-check text-base mb-1"></i>
             <span>裝備備忘</span>
         </button>
     </nav>
@@ -661,8 +698,19 @@
             return {
                 activeTab: 'dossier',
                 selectedDay: 1,
+                fontScale: 'large', // Default to large for comfortable reading
                 openPuzzles: {},
                 solvedPuzzles: {},
+
+                get fontScaleClass() {
+                    if (this.fontScale === 'large') return 'font-scale-large';
+                    if (this.fontScale === 'xlarge') return 'font-scale-xlarge';
+                    return '';
+                },
+
+                setFontScale(scale) {
+                    this.fontScale = scale;
+                },
 
                 get solvedCount() {
                     return Object.values(this.solvedPuzzles).filter(Boolean).length;
