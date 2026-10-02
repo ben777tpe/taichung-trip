@@ -2,820 +2,685 @@
 <html lang="zh-TW">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Ben家專屬｜台中名偵探家庭解謎之旅 (2天1夜)</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>CASE NO. 2026-TC｜台中名偵探家庭解謎手冊</title>
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- Alpine.js -->
     <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
-    <!-- FontAwesome Icons -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <!-- Google Fonts: Noto Sans TC & Noto Serif TC -->
-    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@300;400;500;700;900&family=Noto+Serif+TC:wght@500;700;900&display=swap" rel="stylesheet">
+    <!-- FontAwesome 6 -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <!-- Google Fonts: Noto Serif TC, Noto Sans TC, Space Mono, Cinzel -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700;900&family=Noto+Sans+TC:wght@300;400;500;600;700&family=Noto+Serif+TC:wght@500;700;900&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
     <script>
         tailwind.config = {
             theme: {
                 extend: {
                     colors: {
-                        brand: { 50: '#f0fdfa', 100: '#ccfbf1', 200: '#99f6e4', 500: '#14b8a6', 600: '#0d9488', 700: '#0f766e', 800: '#115e59' },
-                        detective: { 50: '#fdf4ff', 100: '#fae8ff', 500: '#d946ef', 600: '#c026d3', 700: '#a21caf' },
-                        amberGold: { 500: '#f59e0b', 600: '#d97706' }
+                        noir: '#0e131f',
+                        noirCard: '#161c2d',
+                        parchment: '#fcfbf7',
+                        parchmentDark: '#f4efe4',
+                        brass: '#c28b26',
+                        brassLight: '#e4b652',
+                        waxCrimson: '#9e1c1c',
+                        waxLight: '#be123c',
+                        detectiveBlue: '#1e293b',
+                        emeraldSecret: '#065f46'
                     },
                     fontFamily: {
-                        sans: ['Noto Sans TC', 'sans-serif'],
-                        serif: ['Noto Serif TC', 'serif'],
+                        sans: ['"Noto Sans TC"', 'sans-serif'],
+                        serif: ['"Noto Serif TC"', 'serif'],
+                        mono: ['"Space Mono"', 'monospace'],
+                        cinzel: ['"Cinzel"', 'serif'],
+                    },
+                    boxShadow: {
+                        'dossier': '0 10px 30px -5px rgba(14, 19, 31, 0.12), 0 4px 10px -2px rgba(14, 19, 31, 0.06)',
+                        'stamp': 'inset 0 0 0 2px #9e1c1c, 0 4px 12px rgba(158, 28, 28, 0.25)',
                     }
                 }
             }
         }
     </script>
     <style>
-        .glass-panel { background: rgba(255, 255, 255, 0.95); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); border-bottom: 1px solid rgba(0,0,0,0.05); }
+        body {
+            background-color: #f7f4ec;
+            background-image: radial-gradient(#e5dec9 0.75px, transparent 0.75px);
+            background-size: 16px 16px;
+        }
         .hide-scrollbar::-webkit-scrollbar { display: none; }
         .hide-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
-        .card-hover { transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); }
-        .card-hover:hover { transform: translateY(-4px); box-shadow: 0 12px 24px -10px rgba(13, 148, 136, 0.25); border-color: #5eead4; }
-        .text-shadow { text-shadow: 0 2px 4px rgba(0,0,0,0.6); }
+        .stamp-badge {
+            display: inline-block;
+            padding: 3px 9px;
+            text-transform: uppercase;
+            font-family: 'Space Mono', monospace;
+            font-size: 10px;
+            font-weight: 700;
+            letter-spacing: 0.1em;
+            border: 1.5px solid #9e1c1c;
+            color: #9e1c1c;
+            border-radius: 4px;
+            transform: rotate(-1.5deg);
+        }
+        .dossier-tab {
+            clip-path: polygon(0 0, calc(100% - 14px) 0, 100% 100%, 0 100%);
+        }
+        .touch-btn {
+            min-height: 40px;
+            touch-action: manipulation;
+        }
     </style>
 </head>
-<body class="bg-slate-50 text-slate-800 font-sans antialiased min-h-screen selection:bg-brand-200" x-data="detectiveTripApp()">
+<body class="text-slate-800 font-sans antialiased min-h-screen pb-24 selection:bg-brass selection:text-white" x-data="detectiveDossierApp()">
 
-    <!-- Header & Nav -->
-    <header class="sticky top-0 z-40 w-full glass-panel shadow-sm transition-all duration-300">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
-            <div class="flex items-center space-x-3 cursor-pointer" @click="activeTab = 'hero'">
-                <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-brand-600 to-detective-600 flex items-center justify-center text-white shadow-md">
-                    <i class="fa-solid fa-magnifying-glass text-lg"></i>
+    <!-- Top Confidential Header Bar -->
+    <header class="sticky top-0 z-50 bg-noir text-slate-100 border-b border-brass/30 shadow-lg backdrop-blur-md bg-opacity-95">
+        <div class="max-w-5xl mx-auto px-4 sm:px-6 h-14 flex items-center justify-between">
+            <div class="flex items-center space-x-2.5 cursor-pointer" @click="activeTab = 'dossier'">
+                <div class="w-8 h-8 rounded-lg bg-brass flex items-center justify-center text-noir font-bold text-sm shadow">
+                    <i class="fa-solid fa-magnifying-glass"></i>
                 </div>
-                <div>
-                    <span class="font-serif font-bold text-lg text-slate-900 tracking-wide">Ben家大冒險</span>
-                    <span class="text-[10px] px-2 py-0.5 ml-1 bg-detective-100 text-detective-700 font-bold rounded-full">台中名偵探 2D1N</span>
+                <div class="flex flex-col">
+                    <div class="flex items-center gap-1.5">
+                        <span class="font-cinzel text-xs text-brass tracking-widest font-bold">CASE NO. 2026-TC</span>
+                        <span class="stamp-badge py-0 px-1 border-brass text-brass text-[9px] scale-90">TOP SECRET</span>
+                    </div>
+                    <span class="font-serif font-black text-sm text-slate-100 tracking-wide">台中名偵探家庭解謎手冊</span>
                 </div>
             </div>
 
-            <!-- Desktop Nav -->
-            <nav class="hidden md:flex items-center space-x-1 lg:space-x-2">
-                <template x-for="tab in navTabs" :key="tab.id">
-                    <button @click="activeTab = tab.id"
-                            :class="activeTab === tab.id ? 'bg-brand-600 text-white shadow-sm' : 'text-slate-600 hover:text-brand-600 hover:bg-brand-50'"
-                            class="px-3.5 py-2 rounded-lg text-xs font-bold transition-all flex items-center space-x-1.5">
-                        <i :class="tab.icon"></i>
-                        <span x-text="tab.name"></span>
-                    </button>
-                </template>
-            </nav>
-
-            <div class="flex items-center space-x-2">
-                <button @click="activeTab = 'mysteries'" class="px-3 py-1.5 bg-gradient-to-r from-detective-600 to-brand-600 hover:from-detective-700 hover:to-brand-700 text-white text-xs font-bold rounded-xl shadow-sm flex items-center space-x-1.5 transition transform hover:scale-105 active:scale-95">
-                    <i class="fa-solid fa-user-secret text-yellow-300"></i>
+            <!-- Header Case Progress indicator -->
+            <div class="flex items-center space-x-3">
+                <div class="hidden sm:flex items-center space-x-2 text-xs font-mono bg-noirCard px-3 py-1 rounded-full border border-slate-700">
+                    <span class="text-slate-400">破案進度:</span>
+                    <span class="text-brass font-bold" x-text="solvedCount + ' / 6'"></span>
+                </div>
+                <button @click="activeTab = 'mysteries'" class="px-3 py-1.5 bg-brass hover:bg-brassLight text-noir text-xs font-bold rounded-lg transition active:scale-95 flex items-center gap-1.5 shadow">
+                    <i class="fa-solid fa-key text-[11px]"></i>
                     <span>關主祕笈</span>
                 </button>
             </div>
         </div>
-
-        <!-- Mobile Nav -->
-        <div class="md:hidden flex overflow-x-auto hide-scrollbar px-4 py-2 bg-white border-t border-slate-100 space-x-2">
-            <template x-for="tab in navTabs" :key="tab.id">
-                <button @click="activeTab = tab.id"
-                        :class="activeTab === tab.id ? 'bg-brand-600 text-white' : 'bg-slate-100 text-slate-600'"
-                        class="whitespace-nowrap px-3 py-1.5 rounded-full text-[11px] font-bold flex items-center space-x-1.5">
-                    <i :class="tab.icon"></i>
-                    <span x-text="tab.name"></span>
-                </button>
-            </template>
-        </div>
     </header>
 
-    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+    <main class="max-w-5xl mx-auto px-4 sm:px-6 pt-5 pb-8 space-y-6">
 
-        <!-- Tab: Hero (首頁) -->
-        <div x-show="activeTab === 'hero'" x-transition class="space-y-6">
-            <div class="relative rounded-3xl overflow-hidden shadow-2xl min-h-[480px] flex items-end">
-                <img src="https://images.unsplash.com/photo-1596485802107-160cc51fb1da?auto=format&fit=crop&w=1600&q=80" 
-                     alt="National Taichung Theater" class="absolute inset-0 w-full h-full object-cover">
-                <div class="absolute inset-0 bg-gradient-to-t from-slate-950 via-slate-900/60 to-transparent"></div>
-
-                <div class="absolute top-6 left-6 right-6 flex flex-wrap justify-between items-center gap-2">
-                    <span class="bg-black/50 backdrop-blur-md border border-white/20 text-white text-xs px-3 py-1.5 rounded-full font-bold flex items-center gap-1.5">
-                        <i class="fa-solid fa-user-secret text-amber-400"></i> 柯南偵探風・生活科學家庭解謎
-                    </span>
-                    <span class="bg-brand-600/90 backdrop-blur-md text-white text-xs px-3 py-1.5 rounded-full font-bold shadow-lg">
-                        <i class="fa-solid fa-route text-emerald-300 mr-1"></i> Google & Apple 雙地圖一鍵開啟
-                    </span>
+        <!-- Case Hero Banner: The Detective Briefing -->
+        <section class="relative bg-noir rounded-3xl overflow-hidden shadow-2xl border border-slate-800 text-slate-100 p-6 sm:p-8">
+            <div class="absolute -right-10 -bottom-10 opacity-10 text-slate-100 text-9xl pointer-events-none select-none">
+                <i class="fa-solid fa-fingerprint"></i>
+            </div>
+            
+            <div class="relative z-10 space-y-4">
+                <div class="flex flex-wrap items-center justify-between gap-2 border-b border-slate-800 pb-3">
+                    <div class="flex items-center space-x-2">
+                        <span class="px-2.5 py-0.5 bg-waxCrimson text-white text-[10px] font-mono font-bold tracking-wider rounded uppercase">Classified Dossier</span>
+                        <span class="text-xs text-slate-400 font-mono">Date: 2026.10 ｜ 2 Days 1 Night</span>
+                    </div>
+                    <div class="flex items-center space-x-2 text-xs text-slate-400">
+                        <i class="fa-solid fa-location-dot text-brass"></i>
+                        <span>台北 ➔ 台中 ➔ 后豐東豐</span>
+                    </div>
                 </div>
 
-                <div class="relative p-6 sm:p-10 z-10 text-white max-w-3xl">
-                    <div class="inline-block px-3 py-1 bg-detective-600/90 text-white text-[10px] font-bold rounded-lg mb-3 tracking-wider uppercase shadow-sm">
-                        Detective Family Quest 2026
-                    </div>
-                    <h1 class="font-serif text-3xl sm:text-5xl font-black tracking-tight leading-tight mb-4 text-shadow">
-                        台中名偵探家庭解謎之旅：<br><span class="text-transparent bg-clip-text bg-gradient-to-r from-emerald-300 via-teal-200 to-amber-200">佳恩 × 芊瑾 現場破案實錄</span>
+                <div class="space-y-2">
+                    <h1 class="font-serif text-2xl sm:text-4xl font-black text-slate-100 tracking-tight leading-snug">
+                        台中名偵探家庭解謎手冊：<br>
+                        <span class="text-transparent bg-clip-text bg-gradient-to-r from-brass via-amber-200 to-emerald-300 font-serif">佳恩 × 芊瑾 現場破案實錄</span>
                     </h1>
-                    <p class="text-slate-200 text-sm sm:text-base mb-6 font-light leading-relaxed">
-                        結合柯南偵探風、科學生活原理、歷史典故與現場觀察！為這趟二天一夜的 6 個行程節點設計了「家庭關主祕笈」。每個地點都有仔細時間安排、Google 與 Apple 雙地圖一鍵導航，以及爸爸專屬的「現場出題與謎底揭曉」互動功能！
+                    <p class="text-slate-300 text-xs sm:text-sm font-light leading-relaxed max-w-3xl">
+                        這是一份結合「柯南名偵探風格、生活科學奧祕、百年鐵道歷史與實地觀察」的二天一夜家庭專屬行動手冊。每到一個行程節點，爸爸（關主）依祕笈出題，由國二的佳恩（邏輯推理）與小六的芊瑾（敏銳觀察）抽絲剝繭現場破案！
                     </p>
-                    <div class="flex flex-wrap gap-3">
-                        <button @click="activeTab = 'itinerary'" class="bg-brand-600 hover:bg-brand-700 text-white px-5 py-3 rounded-xl font-bold shadow-lg transition flex items-center space-x-2 active:scale-95">
-                            <i class="fa-solid fa-calendar-days"></i>
-                            <span>展開每日行程時間軸</span>
-                        </button>
-                        <button @click="activeTab = 'mysteries'" class="bg-detective-600 hover:bg-detective-700 text-white px-5 py-3 rounded-xl font-bold shadow-lg transition flex items-center space-x-2 active:scale-95">
-                            <i class="fa-solid fa-brain text-yellow-300"></i>
-                            <span>開啟 6 大關主祕笈</span>
-                        </button>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Key Info Grid -->
-            <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
-                <div @click="activeTab = 'itinerary'" class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm hover:border-brand-300 cursor-pointer card-hover flex flex-col items-center text-center group">
-                    <div class="w-12 h-12 rounded-full bg-teal-50 text-teal-600 flex items-center justify-center text-xl mb-3 group-hover:scale-110 transition">
-                        <i class="fa-solid fa-clock"></i>
-                    </div>
-                    <h4 class="font-bold text-slate-800 text-sm">精確時間軸</h4>
-                    <p class="text-[10px] text-slate-500 mt-1">週四傍晚出發 ➔ 週五全日</p>
-                </div>
-                <div @click="activeTab = 'mysteries'" class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm hover:border-detective-300 cursor-pointer card-hover flex flex-col items-center text-center group">
-                    <div class="w-12 h-12 rounded-full bg-detective-50 text-detective-600 flex items-center justify-center text-xl mb-3 group-hover:scale-110 transition">
-                        <i class="fa-solid fa-puzzle-piece"></i>
-                    </div>
-                    <h4 class="font-bold text-slate-800 text-sm">6 大解謎關卡</h4>
-                    <p class="text-[10px] text-slate-500 mt-1">爸爸出題 × 女兒破案</p>
-                </div>
-                <div @click="activeTab = 'food'" class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm hover:border-amber-300 cursor-pointer card-hover flex flex-col items-center text-center group">
-                    <div class="w-12 h-12 rounded-full bg-amber-50 text-amber-600 flex items-center justify-center text-xl mb-3 group-hover:scale-110 transition">
-                        <i class="fa-solid fa-bread-slice"></i>
-                    </div>
-                    <h4 class="font-bold text-slate-800 text-sm">必吃美食補給</h4>
-                    <p class="text-[10px] text-slate-500 mt-1">PRESERVE、容燒、茶六、200days</p>
-                </div>
-                <div @click="activeTab = 'prep'" class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm hover:border-rose-300 cursor-pointer card-hover flex flex-col items-center text-center group">
-                    <div class="w-12 h-12 rounded-full bg-rose-50 text-rose-600 flex items-center justify-center text-xl mb-3 group-hover:scale-110 transition">
-                        <i class="fa-solid fa-award"></i>
-                    </div>
-                    <h4 class="font-bold text-slate-800 text-sm">破關彩蛋獎勵</h4>
-                    <p class="text-[10px] text-slate-500 mt-1">柯南禮物與草湖芋仔冰</p>
-                </div>
-            </div>
-        </div>
-
-        <!-- Tab: Itinerary (每日行程) -->
-        <div x-show="activeTab === 'itinerary'" x-transition class="space-y-6">
-            <div class="bg-white p-6 rounded-3xl border border-slate-200/80 shadow-sm">
-                <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-6">
-                    <div>
-                        <h2 class="text-2xl font-bold font-serif text-slate-900">2天1夜 偵探解謎行程表</h2>
-                        <p class="text-sm text-slate-500">每個節點均設有 Google & Apple 雙地圖按鈕，點擊可一鍵導航或展開謎題！</p>
-                    </div>
-                    <div class="flex space-x-2">
-                        <button @click="currentDay = 1"
-                                :class="currentDay === 1 ? 'bg-brand-600 text-white shadow-md' : 'bg-slate-100 text-slate-700 hover:bg-slate-200'"
-                                class="px-4 py-2 rounded-xl text-xs font-bold transition flex items-center space-x-1.5 active:scale-95">
-                            <i class="fa-solid fa-moon"></i>
-                            <span>D1 週四傍晚抵達</span>
-                        </button>
-                        <button @click="currentDay = 2"
-                                :class="currentDay === 2 ? 'bg-brand-600 text-white shadow-md' : 'bg-slate-100 text-slate-700 hover:bg-slate-200'"
-                                class="px-4 py-2 rounded-xl text-xs font-bold transition flex items-center space-x-1.5 active:scale-95">
-                            <i class="fa-solid fa-sun"></i>
-                            <span>D2 週五精華解謎</span>
-                        </button>
-                    </div>
                 </div>
 
-                <!-- Day 1 Timeline -->
-                <div x-show="currentDay === 1" class="space-y-6">
-                    <div class="bg-gradient-to-r from-slate-900 via-teal-950 to-brand-900 text-white p-6 rounded-2xl shadow-lg relative overflow-hidden">
-                        <div class="relative z-10 flex flex-col md:flex-row justify-between md:items-center gap-4">
-                            <div>
-                                <div class="flex items-center space-x-2 mb-2">
-                                    <span class="px-3 py-1 bg-white/20 text-white text-xs rounded-full font-bold">週四傍晚～夜晚</span>
-                                    <span class="px-2.5 py-0.5 bg-amber-500/90 text-white text-[10px] font-bold rounded-md">⏰ 核心：對齊 20:00 麵包打烊</span>
-                                </div>
-                                <h3 class="text-xl sm:text-2xl font-bold font-serif">台北出發 ➔ PRESERVE 酸種麵包 ➔ 日月千喜 ➔ 容燒居酒屋</h3>
-                                <p class="text-sm text-teal-200 mt-1">17:15-17:30 提早出發，19:40 抵達買麵包當翌日早餐，入住七期頂級飯店後享用炭火串燒小酌。</p>
-                            </div>
+                <!-- Detective Agents Roster -->
+                <div class="grid grid-cols-3 gap-2.5 sm:gap-4 pt-2">
+                    <div class="bg-noirCard/80 border border-slate-800 rounded-xl p-3 flex items-center space-x-2.5">
+                        <div class="w-8 h-8 rounded-full bg-brass/20 text-brass flex items-center justify-center font-bold text-xs shrink-0">
+                            <i class="fa-solid fa-user-tie"></i>
+                        </div>
+                        <div class="min-w-0">
+                            <div class="text-[10px] text-slate-400 font-mono">關主 / 司令官</div>
+                            <div class="font-bold text-xs text-slate-100 truncate">爸爸 Ben</div>
                         </div>
                     </div>
 
-                    <!-- Spots -->
-                    <div class="mt-8 ml-2 sm:ml-6">
-                        <template x-for="(spot, idx) in day1Spots" :key="idx">
-                            <div class="relative pl-8 sm:pl-12 pb-4">
-                                <template x-if="idx !== day1Spots.length - 1">
-                                    <div class="absolute left-[11px] sm:left-[15px] top-8 bottom-[-20px] w-[2px] bg-brand-200 z-0"></div>
-                                </template>
-                                <div class="absolute left-0 sm:left-1 top-4 w-6 h-6 rounded-full bg-white border-4 border-brand-500 z-10 shadow-sm flex items-center justify-center"></div>
-
-                                <div class="bg-white rounded-2xl border border-slate-200 shadow-sm card-hover relative z-10 mb-4 transition-all overflow-hidden p-5">
-                                    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-2">
-                                        <div class="flex items-center space-x-3">
-                                            <span class="text-xs font-extrabold px-2.5 py-0.5 bg-brand-100 text-brand-700 rounded-md shrink-0" x-text="spot.time"></span>
-                                            <h4 class="font-bold text-slate-900 text-base sm:text-lg flex items-center gap-2">
-                                                <span x-text="spot.name"></span>
-                                                <template x-if="spot.puzzleBadge">
-                                                    <span class="px-2 py-0.5 bg-detective-100 text-detective-700 text-[10px] font-extrabold rounded-full" x-text="spot.puzzleBadge"></span>
-                                                </template>
-                                            </h4>
-                                        </div>
-
-                                        <!-- Dual Maps Navigation Buttons -->
-                                        <div class="flex items-center gap-1.5 shrink-0">
-                                            <button @click="openGoogleMap(spot)" 
-                                                    class="px-2.5 py-1.5 bg-emerald-50 hover:bg-emerald-100 text-emerald-700 hover:text-emerald-800 transition flex items-center space-x-1 text-[11px] font-bold rounded-lg border border-emerald-300 shadow-sm active:scale-95"
-                                                    title="在 Google Maps 開啟導航">
-                                                <i class="fa-solid fa-location-dot text-emerald-600"></i>
-                                                <span>Google</span>
-                                            </button>
-                                            <button @click="openAppleMap(spot)" 
-                                                    class="px-2.5 py-1.5 bg-slate-100 hover:bg-slate-200 text-slate-800 hover:text-black transition flex items-center space-x-1 text-[11px] font-bold rounded-lg border border-slate-300 shadow-sm active:scale-95"
-                                                    title="在 Apple Maps 開啟導航">
-                                                <i class="fa-brands fa-apple text-slate-800 text-xs"></i>
-                                                <span>Apple</span>
-                                            </button>
-                                        </div>
-                                    </div>
-
-                                    <p class="text-sm text-slate-700 mb-3 leading-relaxed" x-text="spot.desc"></p>
-
-                                    <!-- Puzzle Box if available -->
-                                    <template x-if="spot.puzzle">
-                                        <div class="mt-3 p-4 rounded-xl bg-detective-50/70 border border-detective-200 space-y-2">
-                                            <div class="flex items-center justify-between">
-                                                <span class="text-xs font-bold text-detective-700 flex items-center gap-1.5">
-                                                    <i class="fa-solid fa-user-secret"></i>
-                                                    <span x-text="'謎題代號：' + spot.puzzle.code"></span>
-                                                </span>
-                                                <button @click="spot.showAnswer = !spot.showAnswer" class="text-[11px] font-bold text-detective-600 hover:text-detective-800 underline">
-                                                    <span x-text="spot.showAnswer ? '隱藏謎底' : '查看關主謎底 ➔'"></span>
-                                                </button>
-                                            </div>
-                                            <div class="text-xs text-slate-700 font-medium">
-                                                <span class="text-detective-800 font-bold">🗣️ 爸爸出題：</span>
-                                                <span x-text="spot.puzzle.question"></span>
-                                            </div>
-                                            <div x-show="spot.showAnswer" x-transition class="pt-2 border-t border-detective-200 text-xs text-slate-800 space-y-1">
-                                                <div class="font-bold text-emerald-700" x-text="'✨ 原理：' + spot.puzzle.principle"></div>
-                                                <p class="text-slate-600 text-[11px] leading-relaxed" x-text="spot.puzzle.answer"></p>
-                                            </div>
-                                        </div>
-                                    </template>
-
-                                    <template x-if="spot.tip">
-                                        <div class="mt-2 text-xs text-amber-800 bg-amber-50 p-2.5 rounded-lg border border-amber-200 flex items-center gap-1.5">
-                                            <i class="fa-solid fa-lightbulb text-amber-600"></i>
-                                            <span x-text="spot.tip"></span>
-                                        </div>
-                                    </template>
-                                </div>
-
-                                <template x-if="idx !== day1Spots.length - 1 && spot.transit">
-                                    <div class="relative z-20 flex items-center mb-4 -ml-4 sm:-ml-2 bg-white w-fit px-3 py-1.5 rounded-xl border border-teal-200 shadow-sm">
-                                        <div class="text-[11px] text-teal-800 font-bold flex items-center gap-2">
-                                            <i :class="spot.transitIcon || 'fa-solid fa-car-side'"></i>
-                                            <span x-text="spot.transit"></span>
-                                        </div>
-                                    </div>
-                                </template>
-                            </div>
-                        </template>
-                    </div>
-                </div>
-
-                <!-- Day 2 Timeline -->
-                <div x-show="currentDay === 2" class="space-y-6">
-                    <div class="bg-gradient-to-r from-slate-900 via-detective-950 to-brand-900 text-white p-6 rounded-2xl shadow-lg relative overflow-hidden">
-                        <div class="relative z-10 flex flex-col md:flex-row justify-between md:items-center gap-4">
-                            <div>
-                                <div class="flex items-center space-x-2 mb-2">
-                                    <span class="px-3 py-1 bg-white/20 text-white text-xs rounded-full font-bold">週五精華全日</span>
-                                    <span class="px-2.5 py-0.5 bg-emerald-400 text-slate-950 text-[10px] font-bold rounded-md">🚲 歌劇院 × 茶六 × 鐵馬道大推理</span>
-                                </div>
-                                <h3 class="text-xl sm:text-2xl font-bold font-serif">房內早餐 ➔ 歌劇院曲牆 ➔ 茶六燒肉 ➔ 后豐/東豐綠廊 ➔ 返北</h3>
-                                <p class="text-sm text-teal-200 mt-1">電磁感應、3D連續曲牆、梅納反應，一路破案至九號隧道與花樑鋼橋，終點芋仔冰換柯南盲盒！</p>
-                            </div>
+                    <div class="bg-noirCard/80 border border-slate-800 rounded-xl p-3 flex items-center space-x-2.5">
+                        <div class="w-8 h-8 rounded-full bg-waxCrimson/20 text-waxLight flex items-center justify-center font-bold text-xs shrink-0">
+                            <i class="fa-solid fa-brain"></i>
+                        </div>
+                        <div class="min-w-0">
+                            <div class="text-[10px] text-slate-400 font-mono">邏輯科學偵探</div>
+                            <div class="font-bold text-xs text-slate-100 truncate">佳恩 (國二/13歲)</div>
                         </div>
                     </div>
 
-                    <!-- Spots -->
-                    <div class="mt-8 ml-2 sm:ml-6">
-                        <template x-for="(spot, idx) in day2Spots" :key="idx">
-                            <div class="relative pl-8 sm:pl-12 pb-4">
-                                <template x-if="idx !== day2Spots.length - 1">
-                                    <div class="absolute left-[11px] sm:left-[15px] top-8 bottom-[-20px] w-[2px] bg-brand-200 z-0"></div>
-                                </template>
-                                <div class="absolute left-0 sm:left-1 top-4 w-6 h-6 rounded-full bg-white border-4 border-brand-500 z-10 shadow-sm flex items-center justify-center"></div>
+                    <div class="bg-noirCard/80 border border-slate-800 rounded-xl p-3 flex items-center space-x-2.5">
+                        <div class="w-8 h-8 rounded-full bg-emerald-900/30 text-emerald-400 flex items-center justify-center font-bold text-xs shrink-0">
+                            <i class="fa-solid fa-eye"></i>
+                        </div>
+                        <div class="min-w-0">
+                            <div class="text-[10px] text-slate-400 font-mono">敏銳觀察偵探</div>
+                            <div class="font-bold text-xs text-slate-100 truncate">芊瑾 (小六/11歲)</div>
+                        </div>
+                    </div>
+                </div>
 
-                                <div class="bg-white rounded-2xl border border-slate-200 shadow-sm card-hover relative z-10 mb-4 transition-all overflow-hidden p-5">
-                                    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-2">
-                                        <div class="flex items-center space-x-3">
-                                            <span class="text-xs font-extrabold px-2.5 py-0.5 bg-brand-100 text-brand-700 rounded-md shrink-0" x-text="spot.time"></span>
-                                            <h4 class="font-bold text-slate-900 text-base sm:text-lg flex items-center gap-2">
-                                                <span x-text="spot.name"></span>
-                                                <template x-if="spot.puzzleBadge">
-                                                    <span class="px-2 py-0.5 bg-detective-100 text-detective-700 text-[10px] font-extrabold rounded-full" x-text="spot.puzzleBadge"></span>
-                                                </template>
-                                            </h4>
-                                        </div>
+                <!-- Quick Solved Progress Bar -->
+                <div class="pt-2">
+                    <div class="flex justify-between items-center text-xs font-mono mb-1.5">
+                        <span class="text-slate-400">總任務破解進度 (6 大謎題關卡)</span>
+                        <span class="text-brass font-bold" x-text="Math.round((solvedCount / 6) * 100) + '% COMPLETED'"></span>
+                    </div>
+                    <div class="w-full h-2 bg-slate-800 rounded-full overflow-hidden">
+                        <div class="h-full bg-gradient-to-r from-brass to-emerald-400 transition-all duration-500 rounded-full" :style="'width: ' + (solvedCount / 6 * 100) + '%'"></div>
+                    </div>
+                </div>
+            </div>
+        </section>
 
-                                        <!-- Dual Maps Navigation Buttons -->
-                                        <div class="flex items-center gap-1.5 shrink-0">
-                                            <button @click="openGoogleMap(spot)" 
-                                                    class="px-2.5 py-1.5 bg-emerald-50 hover:bg-emerald-100 text-emerald-700 hover:text-emerald-800 transition flex items-center space-x-1 text-[11px] font-bold rounded-lg border border-emerald-300 shadow-sm active:scale-95"
-                                                    title="在 Google Maps 開啟導航">
-                                                <i class="fa-solid fa-location-dot text-emerald-600"></i>
-                                                <span>Google</span>
-                                            </button>
-                                            <button @click="openAppleMap(spot)" 
-                                                    class="px-2.5 py-1.5 bg-slate-100 hover:bg-slate-200 text-slate-800 hover:text-black transition flex items-center space-x-1 text-[11px] font-bold rounded-lg border border-slate-300 shadow-sm active:scale-95"
-                                                    title="在 Apple Maps 開啟導航">
-                                                <i class="fa-brands fa-apple text-slate-800 text-xs"></i>
-                                                <span>Apple</span>
-                                            </button>
+        <!-- Navigation Tabs Bar (File Folder Style) -->
+        <div class="flex overflow-x-auto hide-scrollbar border-b border-slate-300 space-x-1.5 pt-2">
+            <button @click="activeTab = 'dossier'" 
+                    :class="activeTab === 'dossier' ? 'bg-white border-t-2 border-brass text-noir font-bold shadow-sm' : 'bg-slate-200/80 text-slate-600 hover:bg-slate-200'"
+                    class="px-4 py-2.5 rounded-t-xl text-xs flex items-center space-x-2 shrink-0 transition">
+                <i class="fa-solid fa-folder-open text-brass"></i>
+                <span>行動時程與路線 (Itinerary)</span>
+            </button>
+            <button @click="activeTab = 'mysteries'" 
+                    :class="activeTab === 'mysteries' ? 'bg-white border-t-2 border-waxCrimson text-noir font-bold shadow-sm' : 'bg-slate-200/80 text-slate-600 hover:bg-slate-200'"
+                    class="px-4 py-2.5 rounded-t-xl text-xs flex items-center space-x-2 shrink-0 transition">
+                <i class="fa-solid fa-user-secret text-waxCrimson"></i>
+                <span>關主祕笈全集 (Puzzles)</span>
+            </button>
+            <button @click="activeTab = 'food'" 
+                    :class="activeTab === 'food' ? 'bg-white border-t-2 border-emerald-600 text-noir font-bold shadow-sm' : 'bg-slate-200/80 text-slate-600 hover:bg-slate-200'"
+                    class="px-4 py-2.5 rounded-t-xl text-xs flex items-center space-x-2 shrink-0 transition">
+                <i class="fa-solid fa-utensils text-emerald-600"></i>
+                <span>補給站名冊 (Food Intel)</span>
+            </button>
+            <button @click="activeTab = 'prep'" 
+                    :class="activeTab === 'prep' ? 'bg-white border-t-2 border-indigo-600 text-noir font-bold shadow-sm' : 'bg-slate-200/80 text-slate-600 hover:bg-slate-200'"
+                    class="px-4 py-2.5 rounded-t-xl text-xs flex items-center space-x-2 shrink-0 transition">
+                <i class="fa-solid fa-clipboard-check text-indigo-600"></i>
+                <span>出勤裝備清單 (Field Gear)</span>
+            </button>
+        </div>
+
+        <!-- ============================================== -->
+        <!-- TAB 1: DOSSIER (行動時程與路線) -->
+        <!-- ============================================== -->
+        <div x-show="activeTab === 'dossier'" x-transition class="space-y-6">
+
+            <!-- Day Switcher -->
+            <div class="flex items-center justify-between bg-white p-3 rounded-2xl shadow-sm border border-slate-200">
+                <div class="flex space-x-2">
+                    <button @click="selectedDay = 1"
+                            :class="selectedDay === 1 ? 'bg-noir text-slate-100 shadow' : 'bg-slate-100 text-slate-600 hover:bg-slate-200'"
+                            class="px-3.5 py-1.5 rounded-xl text-xs font-bold transition flex items-center gap-1.5 active:scale-95">
+                        <i class="fa-solid fa-moon text-brass"></i>
+                        <span>D1 週四傍晚（抵達與夜探）</span>
+                    </button>
+                    <button @click="selectedDay = 2"
+                            :class="selectedDay === 2 ? 'bg-noir text-slate-100 shadow' : 'bg-slate-100 text-slate-600 hover:bg-slate-200'"
+                            class="px-3.5 py-1.5 rounded-xl text-xs font-bold transition flex items-center gap-1.5 active:scale-95">
+                        <i class="fa-solid fa-sun text-brass"></i>
+                        <span>D2 週五全日（破案大作戰）</span>
+                    </button>
+                </div>
+                <div class="text-[11px] font-mono text-slate-500 hidden sm:block">
+                    點擊各節點雙地圖一鍵開啟
+                </div>
+            </div>
+
+            <!-- Day 1 Content -->
+            <div x-show="selectedDay === 1" class="space-y-4">
+                
+                <!-- Notice Alert: Alignment on 20:00 closing -->
+                <div class="bg-amber-50 border-l-4 border-brass p-4 rounded-r-2xl shadow-sm text-xs space-y-1">
+                    <div class="font-bold text-amber-900 flex items-center gap-1.5">
+                        <i class="fa-solid fa-triangle-exclamation text-brass"></i>
+                        <span>關鍵時間對齊警告：PRESERVE 惠中店 20:00 打烊</span>
+                    </div>
+                    <p class="text-amber-800 leading-relaxed">
+                        週四台北開車出發建議於 <strong>17:15～17:30</strong> 啟程，下中港交流道直達門市（約 19:40 抵達門市挑選天然酸種歐包當翌日早餐）。買妥後車子直接駛入斜對面僅 180 公尺的<strong>日月千喜地下停車場 Check-in</strong>，動線完美無縫！
+                    </p>
+                </div>
+
+                <!-- Spot Cards Day 1 -->
+                <div class="space-y-4">
+                    <template x-for="(spot, idx) in day1Spots" :key="idx">
+                        <article class="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden card-hover transition">
+                            <div class="p-5 sm:p-6 space-y-3">
+                                
+                                <!-- Card Header -->
+                                <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                                    <div class="flex items-center space-x-3">
+                                        <div class="px-2.5 py-1 bg-noir text-brass font-mono font-bold text-xs rounded-lg shrink-0" x-text="spot.time"></div>
+                                        <div class="flex items-center gap-2 flex-wrap">
+                                            <h3 class="font-serif font-black text-slate-900 text-base sm:text-lg" x-text="spot.title"></h3>
+                                            <template x-if="spot.badge">
+                                                <span class="stamp-badge" x-text="spot.badge"></span>
+                                            </template>
                                         </div>
                                     </div>
 
-                                    <p class="text-sm text-slate-700 mb-3 leading-relaxed" x-text="spot.desc"></p>
-
-                                    <!-- Puzzle Box -->
-                                    <template x-if="spot.puzzle">
-                                        <div class="mt-3 p-4 rounded-xl bg-detective-50/70 border border-detective-200 space-y-2">
-                                            <div class="flex items-center justify-between">
-                                                <span class="text-xs font-bold text-detective-700 flex items-center gap-1.5">
-                                                    <i class="fa-solid fa-user-secret"></i>
-                                                    <span x-text="'謎題代號：' + spot.puzzle.code"></span>
-                                                </span>
-                                                <button @click="spot.showAnswer = !spot.showAnswer" class="text-[11px] font-bold text-detective-600 hover:text-detective-800 underline">
-                                                    <span x-text="spot.showAnswer ? '隱藏謎底' : '查看關主謎底 ➔'"></span>
-                                                </button>
-                                            </div>
-                                            <div class="text-xs text-slate-700 font-medium">
-                                                <span class="text-detective-800 font-bold">🗣️ 爸爸出題：</span>
-                                                <span x-text="spot.puzzle.question"></span>
-                                            </div>
-                                            <div x-show="spot.showAnswer" x-transition class="pt-2 border-t border-detective-200 text-xs text-slate-800 space-y-1">
-                                                <div class="font-bold text-emerald-700" x-text="'✨ 原理：' + spot.puzzle.principle"></div>
-                                                <p class="text-slate-600 text-[11px] leading-relaxed" x-text="spot.puzzle.answer"></p>
-                                            </div>
-                                        </div>
-                                    </template>
-
-                                    <template x-if="spot.tip">
-                                        <div class="mt-2 text-xs text-amber-800 bg-amber-50 p-2.5 rounded-lg border border-amber-200 flex items-center gap-1.5">
-                                            <i class="fa-solid fa-lightbulb text-amber-600"></i>
-                                            <span x-text="spot.tip"></span>
-                                        </div>
-                                    </template>
+                                    <!-- Dual Maps Buttons (Google Maps + Apple Maps) -->
+                                    <div class="flex items-center gap-2 shrink-0">
+                                        <button @click="openGoogleMap(spot)" 
+                                                class="touch-btn px-3 py-1.5 bg-slate-900 hover:bg-slate-800 text-white transition flex items-center space-x-1.5 text-xs font-bold rounded-xl shadow active:scale-95"
+                                                title="在 Google Maps 開啟">
+                                            <i class="fa-solid fa-location-dot text-emerald-400"></i>
+                                            <span>Google 地圖</span>
+                                        </button>
+                                        <button @click="openAppleMap(spot)" 
+                                                class="touch-btn px-3 py-1.5 bg-slate-100 hover:bg-slate-200 text-slate-900 transition flex items-center space-x-1.5 text-xs font-bold rounded-xl border border-slate-300 shadow-sm active:scale-95"
+                                                title="在 Apple Maps 開啟">
+                                            <i class="fa-brands fa-apple text-slate-900 text-sm"></i>
+                                            <span>Apple 地圖</span>
+                                        </button>
+                                    </div>
                                 </div>
 
-                                <template x-if="idx !== day2Spots.length - 1 && spot.transit">
-                                    <div class="relative z-20 flex items-center mb-4 -ml-4 sm:-ml-2 bg-white w-fit px-3 py-1.5 rounded-xl border border-teal-200 shadow-sm">
-                                        <div class="text-[11px] text-teal-800 font-bold flex items-center gap-2">
-                                            <i :class="spot.transitIcon || 'fa-solid fa-car-side'"></i>
-                                            <span x-text="spot.transit"></span>
+                                <!-- Card Context Desc -->
+                                <p class="text-xs sm:text-sm text-slate-600 leading-relaxed" x-text="spot.desc"></p>
+
+                                <!-- Detective Quiz Dossier Component -->
+                                <template x-if="spot.puzzle">
+                                    <div class="rounded-xl border border-brass/40 bg-gradient-to-br from-parchment to-parchmentDark p-4 space-y-2.5 shadow-inner">
+                                        <div class="flex items-center justify-between border-b border-brass/20 pb-2">
+                                            <span class="text-xs font-mono font-bold text-waxCrimson flex items-center gap-1.5">
+                                                <i class="fa-solid fa-magnifying-glass"></i>
+                                                <span x-text="'謎題代號：【' + spot.puzzle.title + '】'"></span>
+                                            </span>
+                                            <button @click="togglePuzzle(spot.puzzle.id)" class="text-xs font-bold text-slate-700 hover:text-waxCrimson flex items-center gap-1">
+                                                <i :class="isPuzzleOpen(spot.puzzle.id) ? 'fa-solid fa-eye-slash' : 'fa-solid fa-eye'"></i>
+                                                <span x-text="isPuzzleOpen(spot.puzzle.id) ? '收合謎底' : '查看關主解密 ➔'"></span>
+                                            </button>
+                                        </div>
+
+                                        <div class="text-xs text-slate-800 leading-relaxed">
+                                            <strong class="text-slate-900 block mb-1">🕵️ 爸爸出題（關主現場發問）：</strong>
+                                            <p x-text="spot.puzzle.question" class="pl-2 border-l-2 border-brass/50 text-slate-700"></p>
+                                        </div>
+
+                                        <div class="text-[11px] text-amber-900 bg-amber-100/60 p-2 rounded-lg font-medium">
+                                            <strong>🔎 現場觀察線索：</strong> <span x-text="spot.puzzle.clue"></span>
+                                        </div>
+
+                                        <!-- Revealed Answer Drawer -->
+                                        <div x-show="isPuzzleOpen(spot.puzzle.id)" x-transition class="pt-3 border-t border-dashed border-brass/40 space-y-1.5">
+                                            <div class="flex items-center justify-between">
+                                                <div class="text-xs font-bold text-emerald-800 flex items-center gap-1.5">
+                                                    <i class="fa-solid fa-circle-check text-emerald-600"></i>
+                                                    <span x-text="'科學/歷史原理：' + spot.puzzle.principle"></span>
+                                                </div>
+                                                <button @click="markSolved(spot.puzzle.id)" 
+                                                        :class="isSolved(spot.puzzle.id) ? 'bg-emerald-700 text-white' : 'bg-slate-200 text-slate-700'"
+                                                        class="px-2 py-0.5 rounded text-[10px] font-bold transition">
+                                                    <span x-text="isSolved(spot.puzzle.id) ? '✓ 已破案' : '標記破案'"></span>
+                                                </button>
+                                            </div>
+                                            <p class="text-xs text-slate-700 leading-relaxed pl-2 bg-white/70 p-2.5 rounded-lg border border-slate-200/80" x-text="spot.puzzle.answer"></p>
                                         </div>
                                     </div>
                                 </template>
+
+                                <!-- Practical Tip -->
+                                <template x-if="spot.tip">
+                                    <div class="text-xs text-slate-500 bg-slate-50 px-3 py-2 rounded-lg flex items-center gap-2 border border-slate-100">
+                                        <i class="fa-solid fa-lightbulb text-brass"></i>
+                                        <span x-text="spot.tip"></span>
+                                    </div>
+                                </template>
+
                             </div>
-                        </template>
+                        </article>
+                    </template>
+                </div>
+            </div>
+
+            <!-- Day 2 Content -->
+            <div x-show="selectedDay === 2" class="space-y-4">
+                
+                <div class="bg-gradient-to-r from-noir to-noirCard text-slate-100 p-4 rounded-2xl border border-slate-800 flex items-center justify-between">
+                    <div class="space-y-0.5">
+                        <span class="text-brass text-xs font-mono font-bold tracking-wider">FRIDAY MISSION SCHEDULE</span>
+                        <h4 class="font-serif font-black text-sm sm:text-base">週五精華全日：房內早餐 ➔ 歌劇院 ➔ 茶六 ➔ 鐵馬道大冒險</h4>
                     </div>
+                    <span class="stamp-badge border-brass text-brass text-[9px]">4 MISSIONS</span>
+                </div>
+
+                <!-- Spot Cards Day 2 -->
+                <div class="space-y-4">
+                    <template x-for="(spot, idx) in day2Spots" :key="idx">
+                        <article class="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden card-hover transition">
+                            <div class="p-5 sm:p-6 space-y-3">
+                                
+                                <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                                    <div class="flex items-center space-x-3">
+                                        <div class="px-2.5 py-1 bg-noir text-brass font-mono font-bold text-xs rounded-lg shrink-0" x-text="spot.time"></div>
+                                        <div class="flex items-center gap-2 flex-wrap">
+                                            <h3 class="font-serif font-black text-slate-900 text-base sm:text-lg" x-text="spot.title"></h3>
+                                            <template x-if="spot.badge">
+                                                <span class="stamp-badge" x-text="spot.badge"></span>
+                                            </template>
+                                        </div>
+                                    </div>
+
+                                    <!-- Dual Maps Buttons -->
+                                    <div class="flex items-center gap-2 shrink-0">
+                                        <button @click="openGoogleMap(spot)" 
+                                                class="touch-btn px-3 py-1.5 bg-slate-900 hover:bg-slate-800 text-white transition flex items-center space-x-1.5 text-xs font-bold rounded-xl shadow active:scale-95"
+                                                title="在 Google Maps 開啟">
+                                            <i class="fa-solid fa-location-dot text-emerald-400"></i>
+                                            <span>Google 地圖</span>
+                                        </button>
+                                        <button @click="openAppleMap(spot)" 
+                                                class="touch-btn px-3 py-1.5 bg-slate-100 hover:bg-slate-200 text-slate-900 transition flex items-center space-x-1.5 text-xs font-bold rounded-xl border border-slate-300 shadow-sm active:scale-95"
+                                                title="在 Apple Maps 開啟">
+                                            <i class="fa-brands fa-apple text-slate-900 text-sm"></i>
+                                            <span>Apple 地圖</span>
+                                        </button>
+                                    </div>
+                                </div>
+
+                                <p class="text-xs sm:text-sm text-slate-600 leading-relaxed" x-text="spot.desc"></p>
+
+                                <!-- Puzzle Section for Day 2 -->
+                                <template x-if="spot.puzzle">
+                                    <div class="rounded-xl border border-brass/40 bg-gradient-to-br from-parchment to-parchmentDark p-4 space-y-2.5 shadow-inner">
+                                        <div class="flex items-center justify-between border-b border-brass/20 pb-2">
+                                            <span class="text-xs font-mono font-bold text-waxCrimson flex items-center gap-1.5">
+                                                <i class="fa-solid fa-magnifying-glass"></i>
+                                                <span x-text="'謎題代號：【' + spot.puzzle.title + '】'"></span>
+                                            </span>
+                                            <button @click="togglePuzzle(spot.puzzle.id)" class="text-xs font-bold text-slate-700 hover:text-waxCrimson flex items-center gap-1">
+                                                <i :class="isPuzzleOpen(spot.puzzle.id) ? 'fa-solid fa-eye-slash' : 'fa-solid fa-eye'"></i>
+                                                <span x-text="isPuzzleOpen(spot.puzzle.id) ? '收合謎底' : '查看關主解密 ➔'"></span>
+                                            </button>
+                                        </div>
+
+                                        <div class="text-xs text-slate-800 leading-relaxed">
+                                            <strong class="text-slate-900 block mb-1">🕵️ 爸爸出題（關主現場發問）：</strong>
+                                            <p x-text="spot.puzzle.question" class="pl-2 border-l-2 border-brass/50 text-slate-700 whitespace-pre-line"></p>
+                                        </div>
+
+                                        <div class="text-[11px] text-amber-900 bg-amber-100/60 p-2 rounded-lg font-medium">
+                                            <strong>🔎 現場觀察線索：</strong> <span x-text="spot.puzzle.clue"></span>
+                                        </div>
+
+                                        <!-- Revealed Answer Drawer -->
+                                        <div x-show="isPuzzleOpen(spot.puzzle.id)" x-transition class="pt-3 border-t border-dashed border-brass/40 space-y-1.5">
+                                            <div class="flex items-center justify-between">
+                                                <div class="text-xs font-bold text-emerald-800 flex items-center gap-1.5">
+                                                    <i class="fa-solid fa-circle-check text-emerald-600"></i>
+                                                    <span x-text="'科學/歷史原理：' + spot.puzzle.principle"></span>
+                                                </div>
+                                                <button @click="markSolved(spot.puzzle.id)" 
+                                                        :class="isSolved(spot.puzzle.id) ? 'bg-emerald-700 text-white' : 'bg-slate-200 text-slate-700'"
+                                                        class="px-2 py-0.5 rounded text-[10px] font-bold transition">
+                                                    <span x-text="isSolved(spot.puzzle.id) ? '✓ 已破案' : '標記破案'"></span>
+                                                </button>
+                                            </div>
+                                            <p class="text-xs text-slate-700 leading-relaxed pl-2 bg-white/70 p-2.5 rounded-lg border border-slate-200/80 whitespace-pre-line" x-text="spot.puzzle.answer"></p>
+                                        </div>
+                                    </div>
+                                </template>
+
+                                <template x-if="spot.tip">
+                                    <div class="text-xs text-slate-500 bg-slate-50 px-3 py-2 rounded-lg flex items-center gap-2 border border-slate-100">
+                                        <i class="fa-solid fa-lightbulb text-brass"></i>
+                                        <span x-text="spot.tip"></span>
+                                    </div>
+                                </template>
+
+                            </div>
+                        </article>
+                    </template>
                 </div>
 
             </div>
+
         </div>
 
-        <!-- Tab: Mysteries (關主祕笈全覽) -->
-        <div x-show="activeTab === 'mysteries'" x-transition class="space-y-6">
-            <div class="bg-white p-6 rounded-3xl border border-slate-200/80 shadow-sm space-y-6">
-                <div class="flex items-center space-x-3 border-b border-slate-100 pb-4">
-                    <div class="w-12 h-12 rounded-2xl bg-detective-100 text-detective-600 flex items-center justify-center text-2xl shrink-0">
-                        <i class="fa-solid fa-user-secret"></i>
+        <!-- ============================================== -->
+        <!-- TAB 2: MYSTERIES (關主祕笈全集) -->
+        <!-- ============================================== -->
+        <div x-show="activeTab === 'mysteries'" x-transition class="space-y-5">
+            <div class="bg-noir text-slate-100 p-6 rounded-3xl border border-slate-800 shadow-xl space-y-3">
+                <div class="flex items-center justify-between">
+                    <div class="flex items-center space-x-3">
+                        <div class="w-10 h-10 rounded-2xl bg-waxCrimson flex items-center justify-center text-white text-lg shadow">
+                            <i class="fa-solid fa-user-secret"></i>
+                        </div>
+                        <div>
+                            <h2 class="font-serif font-black text-xl text-slate-100">名偵探解謎總卷（關主現場操作祕笈）</h2>
+                            <p class="text-xs text-slate-400 font-mono">Top Secret Briefing Guide for Daddy Ben</p>
+                        </div>
                     </div>
-                    <div>
-                        <h2 class="text-2xl font-bold font-serif text-slate-900">台中名偵探家庭解謎手冊（關主祕笈）</h2>
-                        <p class="text-sm text-slate-500">爸爸專用出題寶典！現場讓佳恩（13歲）與小花（11歲）動腦破案</p>
-                    </div>
+                    <span class="stamp-badge border-brass text-brass hidden sm:inline-block">OFFICIAL MANUAL</span>
                 </div>
+                <p class="text-xs text-slate-300 leading-relaxed">
+                    在各個行程節點直接打開本分頁，照著卡片出題。等待兩位小偵探觀察提出假設後，點擊「揭曉謎底」解開背後的自然物理與歷史原理！全部通關後至 200 days 領取終點合格盲盒。
+                </p>
+            </div>
 
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
-                    <template x-for="(m, idx) in allMysteries" :key="idx">
-                        <div class="p-5 rounded-2xl border border-slate-200 bg-slate-50/50 hover:bg-white hover:border-detective-300 card-hover flex flex-col justify-between space-y-3">
-                            <div>
-                                <div class="flex items-center justify-between">
-                                    <span class="px-2.5 py-1 bg-detective-600 text-white text-xs font-bold rounded-lg" x-text="m.stage"></span>
-                                    <span class="text-xs font-bold text-slate-500" x-text="m.location"></span>
-                                </div>
-                                <h3 class="text-base font-bold text-slate-900 mt-2 flex items-center gap-1.5">
-                                    <i class="fa-solid fa-key text-amber-500"></i>
-                                    <span x-text="m.title"></span>
-                                </h3>
-                                <div class="mt-2 text-xs text-slate-700 bg-white p-3 rounded-xl border border-slate-100 space-y-1">
-                                    <div class="font-bold text-detective-700">🗣️ 關主提問：</div>
-                                    <p class="leading-relaxed" x-text="m.question"></p>
-                                </div>
-                                <div class="mt-2 text-xs text-amber-900 bg-amber-50/80 p-2.5 rounded-lg border border-amber-200">
-                                    <span class="font-bold">🔎 現場線索：</span>
-                                    <span x-text="m.clue"></span>
-                                </div>
+            <!-- Puzzle Cards Grid -->
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <template x-for="(puzzle, idx) in allPuzzles" :key="idx">
+                    <div class="bg-white rounded-2xl border border-slate-200 p-5 shadow-sm space-y-3 flex flex-col justify-between card-hover">
+                        <div class="space-y-2.5">
+                            <div class="flex items-center justify-between border-b border-slate-100 pb-2">
+                                <span class="px-2 py-0.5 bg-slate-900 text-brass text-[10px] font-mono font-bold rounded" x-text="puzzle.stage"></span>
+                                <span class="text-xs text-slate-500 font-bold" x-text="puzzle.location"></span>
                             </div>
 
-                            <div class="pt-3 border-t border-slate-200">
-                                <button @click="m.revealed = !m.revealed" class="w-full py-2 bg-gradient-to-r from-brand-600 to-detective-600 text-white rounded-xl text-xs font-bold shadow-sm transition active:scale-95 flex items-center justify-center gap-1.5">
-                                    <i :class="m.revealed ? 'fa-solid fa-eye-slash' : 'fa-solid fa-eye'"></i>
-                                    <span x-text="m.revealed ? '收合謎底' : '揭曉謎底（關主解密）'"></span>
+                            <h3 class="font-serif font-black text-base text-slate-900 flex items-center gap-1.5">
+                                <i class="fa-solid fa-key text-brass text-xs"></i>
+                                <span x-text="puzzle.title"></span>
+                            </h3>
+
+                            <div class="text-xs text-slate-700 bg-parchment p-3 rounded-xl border border-slate-200/60 space-y-1">
+                                <div class="font-bold text-slate-900">🗣️ 關主提問：</div>
+                                <p class="text-slate-700 leading-relaxed whitespace-pre-line" x-text="puzzle.question"></p>
+                            </div>
+
+                            <div class="text-[11px] text-amber-900 bg-amber-50 p-2.5 rounded-lg border border-amber-200">
+                                <strong>🔎 現場觀察線索：</strong> <span x-text="puzzle.clue"></span>
+                            </div>
+                        </div>
+
+                        <!-- Reveal Toggle -->
+                        <div class="pt-2 border-t border-slate-100 space-y-2">
+                            <div class="flex items-center justify-between">
+                                <button @click="puzzle.open = !puzzle.open" class="text-xs font-bold text-slate-700 hover:text-waxCrimson flex items-center gap-1 py-1">
+                                    <i :class="puzzle.open ? 'fa-solid fa-eye-slash' : 'fa-solid fa-eye'"></i>
+                                    <span x-text="puzzle.open ? '收合解密' : '點擊查看關主解密 ➔'"></span>
                                 </button>
-                                <div x-show="m.revealed" x-transition class="mt-3 p-3.5 bg-emerald-50 rounded-xl border border-emerald-200 text-xs space-y-1">
-                                    <div class="font-bold text-emerald-800" x-text="'✨ 科學/歷史原理：' + m.principle"></div>
-                                    <p class="text-slate-700 leading-relaxed" x-text="m.answer"></p>
-                                </div>
+                                <button @click="markSolved(puzzle.id)" 
+                                        :class="isSolved(puzzle.id) ? 'bg-emerald-600 text-white' : 'bg-slate-100 text-slate-600'"
+                                        class="px-2.5 py-1 rounded-lg text-xs font-bold transition flex items-center gap-1">
+                                    <i class="fa-solid fa-check text-[10px]"></i>
+                                    <span x-text="isSolved(puzzle.id) ? '已破案' : '標記破案'"></span>
+                                </button>
+                            </div>
+
+                            <div x-show="puzzle.open" x-transition class="p-3 bg-emerald-50 rounded-xl border border-emerald-200 text-xs text-slate-800 space-y-1">
+                                <div class="font-bold text-emerald-800" x-text="'✨ 原理：' + puzzle.principle"></div>
+                                <p class="text-slate-700 leading-relaxed whitespace-pre-line text-[11px]" x-text="puzzle.answer"></p>
                             </div>
                         </div>
-                    </template>
-                </div>
+                    </div>
+                </template>
             </div>
         </div>
 
-        <!-- Tab: Food (補給站) -->
-        <div x-show="activeTab === 'food'" x-transition class="space-y-6">
-            <div class="bg-white p-6 rounded-3xl border border-slate-200/80 shadow-sm space-y-6">
-                <div class="flex items-center space-x-3 border-b border-slate-100 pb-4">
-                    <div class="w-12 h-12 rounded-2xl bg-amber-100 text-amber-600 flex items-center justify-center text-2xl shrink-0">
-                        <i class="fa-solid fa-utensils"></i>
-                    </div>
-                    <div>
-                        <h2 class="text-2xl font-bold font-serif text-slate-900">偵探能量補給站（美食與特色伴手禮）</h2>
-                        <p class="text-sm text-slate-500">此趟精選餐廳與甜點名冊，全部支援 Google & Apple 雙地圖一鍵導航</p>
-                    </div>
+        <!-- ============================================== -->
+        <!-- TAB 3: FOOD INTEL (補給站名冊) -->
+        <!-- ============================================== -->
+        <div x-show="activeTab === 'food'" x-transition class="space-y-4">
+            <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm flex items-center justify-between">
+                <div>
+                    <h2 class="font-serif font-black text-lg text-slate-900">偵探能量補給站名冊</h2>
+                    <p class="text-xs text-slate-500">純植歐包、備長炭串燒、炭烤土司、頂級燒肉與純白芋仔冰</p>
                 </div>
+                <i class="fa-solid fa-utensils text-brass text-xl"></i>
+            </div>
 
-                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                    <template x-for="item in foodList" :key="item.name">
-                        <div class="bg-white rounded-2xl border border-slate-200 overflow-hidden shadow-sm card-hover flex flex-col justify-between">
-                            <div>
-                                <div class="relative h-44 overflow-hidden">
-                                    <img :src="item.image" :alt="item.name" class="w-full h-full object-cover">
-                                    <span class="absolute top-3 left-3 px-2.5 py-1 bg-black/60 backdrop-blur-md text-white text-xs font-bold rounded-full" x-text="item.category"></span>
-                                </div>
-                                <div class="p-5 space-y-2">
-                                    <div class="text-xs font-semibold text-brand-600" x-text="item.area"></div>
-                                    <h3 class="font-bold text-lg text-slate-900" x-text="item.name"></h3>
-                                    <p class="text-xs text-slate-600 leading-relaxed" x-text="item.desc"></p>
-                                    <div class="p-2 bg-amber-50 rounded-lg border border-amber-100 text-xs text-amber-800 font-bold" x-text="'⭐ 推薦：' + item.mustEat"></div>
-                                </div>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <template x-for="(food, idx) in foodList" :key="idx">
+                    <div class="bg-white rounded-2xl border border-slate-200 p-5 shadow-sm card-hover flex flex-col justify-between space-y-3">
+                        <div class="space-y-2">
+                            <div class="flex items-center justify-between">
+                                <span class="px-2.5 py-0.5 bg-slate-100 text-slate-700 text-[10px] font-mono font-bold rounded" x-text="food.category"></span>
+                                <span class="text-xs text-brass font-bold" x-text="food.timing"></span>
                             </div>
-                            <div class="p-4 pt-0 mt-auto flex items-center justify-between border-t border-slate-100">
-                                <span class="text-[11px] text-slate-500 font-medium" x-text="item.timing"></span>
-                                <div class="flex items-center gap-1.5">
-                                    <button @click="openGoogleMap(item)" class="px-2 py-1 bg-emerald-50 hover:bg-emerald-100 text-emerald-700 font-bold rounded text-[11px] flex items-center gap-1 border border-emerald-200 active:scale-95">
-                                        <i class="fa-solid fa-location-dot text-[10px]"></i> Google
-                                    </button>
-                                    <button @click="openAppleMap(item)" class="px-2 py-1 bg-slate-100 hover:bg-slate-200 text-slate-800 font-bold rounded text-[11px] flex items-center gap-1 border border-slate-300 active:scale-95">
-                                        <i class="fa-brands fa-apple text-xs"></i> Apple
-                                    </button>
-                                </div>
+
+                            <h3 class="font-serif font-black text-lg text-slate-900" x-text="food.name"></h3>
+                            <div class="text-xs text-slate-500 flex items-center gap-1">
+                                <i class="fa-solid fa-map-pin text-waxCrimson text-[10px]"></i>
+                                <span x-text="food.area"></span>
+                            </div>
+
+                            <p class="text-xs text-slate-600 leading-relaxed" x-text="food.desc"></p>
+
+                            <div class="p-2.5 bg-amber-50/80 rounded-xl border border-amber-200/60 text-xs text-amber-950 font-medium">
+                                <strong class="text-amber-900">⭐ 招牌必點：</strong> <span x-text="food.mustEat"></span>
                             </div>
                         </div>
-                    </template>
-                </div>
+
+                        <!-- Dual Maps Action -->
+                        <div class="pt-3 border-t border-slate-100 flex items-center justify-between gap-2">
+                            <span class="text-[11px] text-slate-400 font-mono" x-text="food.note"></span>
+                            <div class="flex items-center gap-2">
+                                <button @click="openGoogleMap(food)" class="px-3 py-1.5 bg-slate-900 hover:bg-slate-800 text-white text-xs font-bold rounded-xl shadow active:scale-95 flex items-center gap-1">
+                                    <i class="fa-solid fa-location-dot text-emerald-400 text-[10px]"></i> Google
+                                </button>
+                                <button @click="openAppleMap(food)" class="px-3 py-1.5 bg-slate-100 hover:bg-slate-200 text-slate-900 text-xs font-bold rounded-xl border border-slate-300 shadow-sm active:scale-95 flex items-center gap-1">
+                                    <i class="fa-brands fa-apple text-slate-900 text-xs"></i> Apple
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </template>
             </div>
         </div>
 
-        <!-- Tab: Prep (裝備與清單) -->
-        <div x-show="activeTab === 'prep'" x-transition class="space-y-6">
-            <div class="bg-white p-6 rounded-3xl border border-slate-200/80 shadow-sm space-y-6">
-                <div class="flex items-center space-x-3 mb-6">
-                    <div class="w-12 h-12 rounded-2xl bg-emerald-100 text-emerald-600 flex items-center justify-center text-2xl shrink-0">
-                        <i class="fa-solid fa-list-check"></i>
-                    </div>
+        <!-- ============================================== -->
+        <!-- TAB 4: PREP (出勤裝備與清單) -->
+        <!-- ============================================== -->
+        <div x-show="activeTab === 'prep'" x-transition class="space-y-4">
+            <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm space-y-4">
+                <div class="flex items-center justify-between border-b border-slate-100 pb-3">
                     <div>
-                        <h2 class="text-2xl font-bold font-serif text-slate-900">行前準備與破案裝備</h2>
-                        <p class="text-sm text-slate-500">預留麵包電話、茶六訂位、電輔車準備與彩蛋小盲盒</p>
+                        <h2 class="font-serif font-black text-lg text-slate-900">行前準備與通關祕技</h2>
+                        <p class="text-xs text-slate-500">電話預留、訂位時間、電輔車租借與破案彩蛋盲盒</p>
                     </div>
+                    <i class="fa-solid fa-clipboard-check text-brass text-xl"></i>
                 </div>
 
-                <div class="space-y-6">
-                    <div class="p-5 rounded-2xl bg-amber-50/80 border border-amber-200 space-y-3">
-                        <div class="flex items-center gap-2 text-amber-900 font-bold">
-                            <i class="fa-solid fa-triangle-exclamation text-amber-600"></i>
-                            <span>出發核心注意點（時間對齊）</span>
-                        </div>
-                        <ul class="text-xs text-amber-950 space-y-1.5 leading-relaxed list-disc list-inside">
-                            <li><strong>PRESERVE 惠中店營業至 20:00 打烊</strong>：週四若 17:15-17:30 出發，約 19:40 抵達門市；若出發較晚，務必於下午致電門市（04-2251-3858）預留酸種麵包與肉桂捲。</li>
-                            <li><strong>日月千喜飯店就在斜對面 180 公尺</strong>：買完麵包直接開進飯店地下停車場 Check-in，走路只要 2 分鐘，動線超順！</li>
-                            <li><strong>茶六中清店週五午餐</strong>：請提前 30 天線上預約，以確保包廂或好位置。</li>
-                            <li><strong>后豐鐵馬道租車</strong>：建議租用「雙人或四人電動輔助自行車」，九號隧道與鋼橋路段輕鬆愜意不流汗。</li>
-                        </ul>
+                <!-- Strategic Reminders Box -->
+                <div class="bg-gradient-to-r from-noir to-noirCard text-slate-100 p-5 rounded-2xl space-y-2 border border-slate-800">
+                    <div class="flex items-center gap-2 text-brass font-bold text-xs uppercase tracking-wider font-mono">
+                        <i class="fa-solid fa-shield-halved"></i>
+                        <span>關鍵行動備忘 (Tactical Reminders)</span>
                     </div>
+                    <ul class="text-xs text-slate-300 space-y-1.5 list-disc list-inside leading-relaxed">
+                        <li><strong>PRESERVE 惠中店</strong>：週四營業至 20:00，出發若超過 17:30，請於當日下午致電 <code>(04) 2251-3858</code> 先預留酸種歐包與肉桂捲。</li>
+                        <li><strong>日月千喜飯店</strong>：就在 PRESERVE 斜後方 180 公尺，買完麵包直接進地下停車場，房客享免費停車。</li>
+                        <li><strong>週五早晨自製＋外送早餐</strong>：房內沖熱水壺咖啡配酸種歐包，亦可叫 Uber Eats「暮香炭烤土司」到一樓大廳。</li>
+                        <li><strong>茶六中清店訂位</strong>：請提早 30 天線上預約，烤肉時記得表面水分乾後再翻面爆發梅納反應！</li>
+                        <li><strong>后豐鐵馬道</strong>：至豐原國道四號橋下租用雙人/四人電輔車，輕鬆騎乘不費力。</li>
+                    </ul>
+                </div>
 
-                    <!-- Checklist -->
-                    <div class="space-y-2">
-                        <template x-for="(task, idx) in checklist" :key="idx">
-                            <label class="flex items-start gap-3 p-3 rounded-xl hover:bg-slate-50 transition cursor-pointer border border-slate-200">
-                                <input type="checkbox" x-model="task.done" class="mt-0.5 w-4 h-4 text-brand-600 rounded border-slate-300 focus:ring-brand-500 shrink-0 cursor-pointer">
-                                <div class="flex-1">
-                                    <div class="font-bold text-slate-800 text-sm" :class="task.done ? 'line-through opacity-40' : ''" x-text="task.item"></div>
-                                    <div class="text-xs text-slate-500 mt-0.5" x-text="task.desc"></div>
-                                </div>
-                            </label>
-                        </template>
-                    </div>
+                <!-- Checklist -->
+                <div class="space-y-2 pt-2">
+                    <h3 class="text-xs font-mono font-bold text-slate-400 uppercase tracking-wider">實體檢核打勾清單</h3>
+                    <template x-for="(item, idx) in checklist" :key="idx">
+                        <label class="flex items-start gap-3 p-3 rounded-xl bg-slate-50 hover:bg-slate-100 transition border border-slate-200 cursor-pointer">
+                            <input type="checkbox" x-model="item.done" class="mt-0.5 w-4 h-4 rounded text-brass focus:ring-brass shrink-0">
+                            <div class="flex-1">
+                                <div class="text-xs font-bold text-slate-900" :class="item.done ? 'line-through text-slate-400' : ''" x-text="item.title"></div>
+                                <div class="text-[11px] text-slate-500 mt-0.5" x-text="item.detail"></div>
+                            </div>
+                        </label>
+                    </template>
+                </div>
 
-                    <!-- Reward Suggestion -->
-                    <div class="p-5 rounded-2xl bg-detective-50 border border-detective-200 space-y-2">
-                        <div class="font-bold text-detective-800 text-sm flex items-center gap-2">
-                            <i class="fa-solid fa-gift text-detective-600"></i>
-                            <span>🎁 終點彩蛋破關獎勵小密技</span>
-                        </div>
-                        <p class="text-xs text-slate-700 leading-relaxed">
-                            爸爸可事先在台北安利美特（Animate）或文具店預先買好《名偵探柯南》小貼紙、小盲盒或鑰匙圈。每在一個行程節點答對一關給予線索碎片，最後在「200 days」享受草湖芋仔冰時，頒發「名偵探合格獎勵」，絕對會是讓姊妹倆印象深刻、充滿歡笑與成就感的旅程！
-                        </p>
+                <!-- Egg Reward -->
+                <div class="p-4 bg-emerald-50 rounded-xl border border-emerald-200 space-y-1 text-xs text-emerald-950">
+                    <div class="font-bold text-emerald-900 flex items-center gap-1.5">
+                        <i class="fa-solid fa-gift text-emerald-600"></i>
+                        <span>🎁 終點柯南破案獎勵密技</span>
                     </div>
+                    <p class="leading-relaxed">
+                        爸爸可事先在台北安利美特（Animate）或文具店預先準備《名偵探柯南》盲盒或徽章小禮物。每在一個節點答對一題給予一個破案標記，最後在 200 days 吃草湖芋仔冰時頒發「名偵探合格獎狀」，絕對是讓兩位女孩終生難忘的回憶！
+                    </p>
                 </div>
             </div>
         </div>
 
     </main>
 
+    <!-- Bottom Mobile Quick Switcher Bar -->
+    <nav class="fixed bottom-0 left-0 right-0 z-50 bg-noir border-t border-slate-800 shadow-2xl px-2 py-1.5 flex justify-around items-center">
+        <button @click="activeTab = 'dossier'" 
+                :class="activeTab === 'dossier' ? 'text-brass font-bold' : 'text-slate-400'"
+                class="flex flex-col items-center p-1 text-[10px] transition">
+            <i class="fa-solid fa-route text-sm mb-0.5"></i>
+            <span>行動時程</span>
+        </button>
+        <button @click="activeTab = 'mysteries'" 
+                :class="activeTab === 'mysteries' ? 'text-waxLight font-bold' : 'text-slate-400'"
+                class="flex flex-col items-center p-1 text-[10px] transition">
+            <i class="fa-solid fa-user-secret text-sm mb-0.5"></i>
+            <span>關主祕笈</span>
+        </button>
+        <button @click="activeTab = 'food'" 
+                :class="activeTab === 'food' ? 'text-emerald-400 font-bold' : 'text-slate-400'"
+                class="flex flex-col items-center p-1 text-[10px] transition">
+            <i class="fa-solid fa-bowl-food text-sm mb-0.5"></i>
+            <span>補給名冊</span>
+        </button>
+        <button @click="activeTab = 'prep'" 
+                :class="activeTab === 'prep' ? 'text-indigo-400 font-bold' : 'text-slate-400'"
+                class="flex flex-col items-center p-1 text-[10px] transition">
+            <i class="fa-solid fa-list-check text-sm mb-0.5"></i>
+            <span>裝備備忘</span>
+        </button>
+    </nav>
+
+    <!-- App Logic Script -->
     <script>
-        function detectiveTripApp() {
+        function detectiveDossierApp() {
             return {
-                activeTab: 'hero',
-                currentDay: 1,
+                activeTab: 'dossier',
+                selectedDay: 1,
+                openPuzzles: {},
+                solvedPuzzles: {},
 
-                navTabs: [
-                    { id: 'hero', name: '探案首頁', icon: 'fa-solid fa-house' },
-                    { id: 'itinerary', name: '每日行程', icon: 'fa-solid fa-calendar-days' },
-                    { id: 'mysteries', name: '關主祕笈', icon: 'fa-solid fa-user-secret' },
-                    { id: 'food', name: '補給名冊', icon: 'fa-solid fa-utensils' },
-                    { id: 'prep', name: '裝備與提醒', icon: 'fa-solid fa-list-check' }
-                ],
+                get solvedCount() {
+                    return Object.values(this.solvedPuzzles).filter(Boolean).length;
+                },
 
-                day1Spots: [
-                    {
-                        time: '17:15',
-                        name: '台北出發 ➔ 國道一號南下',
-                        desc: '建議 17:15～17:30 間從台北出發，車程約 2 小時 15 分，避開尖峰，確保在 19:40 前抵達台中惠中路。',
-                        mapDir: { origin: '台北車站', dest: 'PRESERVE 惠中店' },
-                        transit: '國道一號約 2 小時 15 分',
-                        transitIcon: 'fa-solid fa-car',
-                        tip: '下中港/台中交流道直行市政路轉惠中路二段，PRESERVE 門前有臨停空間。'
-                    },
-                    {
-                        time: '19:40',
-                        name: 'PRESERVE 惠中店（純植烘焙坊）',
-                        puzzleBadge: '關卡 1',
-                        desc: '選購天然酸種麵包（Sourdough）與肉桂捲，作為隔日早晨房內私房早餐。營業至 20:00 打烊。',
-                        mapQuery: 'PRESERVE 台中惠中店',
-                        transit: '步行 2 分鐘（180公尺）進飯店',
-                        transitIcon: 'fa-solid fa-person-walking',
-                        tip: '出發前可先致電 (04) 2251-3858 預留熱門麵包！',
-                        puzzle: {
-                            code: '會呼吸的麵團密碼',
-                            question: '名偵探們，仔細觀察架上的酸種麵包切面，為什麼它不像一般吐司細密平整，而是佈滿大大小小不均勻的氣孔？而且沒加醋為什麼有天然果酸香？',
-                            principle: '野生酵母菌 ＋ 乳酸菌的共生交響曲',
-                            answer: '一般白吐司使用單一商業速發酵母；酸種則是用麵粉和水自然培育的野生菌種。乳酸菌產生天然微酸與防腐能力，野生酵母在十幾小時低溫發酵中不規則吐出二氧化碳氣泡，撐出充滿彈性與大大小小的氣室！'
-                        },
-                        showAnswer: false
-                    },
-                    {
-                        time: '20:00',
-                        name: '台中日月千喜酒店（七期）Check-in',
-                        desc: '位於七期市政核心，就在 PRESERVE 斜後方 180 公尺。車子停入飯店地下停車場後辦理入住。',
-                        mapQuery: '台中日月千喜酒店',
-                        transit: '車程 7 分鐘前往居酒屋',
-                        transitIcon: 'fa-solid fa-car',
-                        tip: '放妥行李稍作梳洗，準備出發小酌吃串燒。'
-                    },
-                    {
-                        time: '20:30',
-                        name: '容燒居酒屋（文心總店）',
-                        puzzleBadge: '關卡 2',
-                        desc: '週四晚抵達台中後的療癒時光！享用現烤雞肉串、明太子烤飯糰與特色串燒。',
-                        mapQuery: '容燒居酒屋 文心總店',
-                        transit: '車程 7 分鐘回飯店休息',
-                        transitIcon: 'fa-solid fa-bed',
-                        tip: '若開車前往，爸爸要注意喝酒不開車；亦可從飯店直接叫計程車或步行。',
-                        puzzle: {
-                            code: '隱形烤箱與炭火的魔術',
-                            question: '兩位偵探，廚房師傅用炭火烤肉串，明明瓦斯爐火也很熱，為什麼居酒屋堅持用木炭炭火？為什麼能烤到外脆內多汁，油滴下去卻沒把肉燻黑？',
-                            principle: '遠紅外線穿透加熱 ＋ 備長炭多孔吸附性',
-                            answer: '瓦斯燃燒會產生大量水蒸氣讓肉變濕軟；高溫木炭主要放射遠紅外線，能瞬間穿透進肉品內部均勻加熱鎖住肉汁，並在無水乾燥高溫下形成酥脆外皮。優質木炭結構多孔且燃燒完全，只有迷人純淨炭香！'
-                        },
-                        showAnswer: false
-                    },
-                    {
-                        time: '22:30',
-                        name: '返回日月千喜酒店・晚安好眠',
-                        desc: '回到飯店舒適客房，泡澡放鬆，為明天的精華解謎行程儲備體力。',
-                        mapQuery: '台中日月千喜酒店'
-                    }
-                ],
+                togglePuzzle(id) {
+                    this.openPuzzles[id] = !this.openPuzzles[id];
+                },
+                isPuzzleOpen(id) {
+                    return !!this.openPuzzles[id];
+                },
 
-                day2Spots: [
-                    {
-                        time: '08:00',
-                        name: '日月千喜酒店房內早餐 ＆ 退房準備',
-                        puzzleBadge: '關卡 3',
-                        desc: '房內享用昨晚 PRESERVE 酸種麵包，搭配 Uber Eats 叫來的暮香炭烤土司（花醬肉排起司蛋配熱紅茶牛奶）。',
-                        mapQuery: '台中日月千喜酒店',
-                        transit: '車程約 5 分鐘前往歌劇院',
-                        transitIcon: 'fa-solid fa-car',
-                        tip: '請於 09:00 前辦理退房，從容前往國家歌劇院！',
-                        puzzle: {
-                            code: '隔空取電的隱形鑰匙',
-                            question: '進房間只要塑膠房卡逼一聲就開了，但卡片裡明明沒裝電池也沒金屬接點，門鎖到底用什麼力量讀取卡片裡的一長串房號密碼？',
-                            principle: '法拉第電磁感應（RFID 無線射頻辨識）',
-                            answer: '門鎖內部隨時發射微弱電磁波。當房卡靠近時，卡片內藏的細小銅線圈（透光可看到邊緣一圈暗影）因磁場變化產生感應電流，瞬間喚醒晶片發射無線密碼，整個過程不到 0.1 秒！'
-                        },
-                        showAnswer: false
-                    },
-                    {
-                        time: '09:15',
-                        name: '臺中國家歌劇院（伊東豊雄建築）',
-                        puzzleBadge: '關卡 4',
-                        desc: '普立茲克建築獎得主震撼世界之作！參觀無柱曲牆構造「美聲涵洞」、6F 空中花園與文創展區。',
-                        mapQuery: '臺中國家歌劇院',
-                        transit: '車程約 12 分鐘至茶六中清店',
-                        transitIcon: 'fa-solid fa-car',
-                        tip: '可在曲牆凹處對著牆壁輕聲說話，感受奇妙的聲音聚焦反射效果。',
-                        puzzle: {
-                            code: '沒有柱子的洞穴迷宮',
-                            question: '傳統房屋都需要垂直梁柱支撐，但歌劇院整棟建築裡幾乎看不到垂直樑柱，牆面都是彎彎曲曲像壺一樣，它是怎麼站立起來的？',
-                            principle: '3D 仿生連續曲牆結構（曲面受力原理）',
-                            answer: '就像蛋殼或安全帽一樣，曲面能將受力均勻分散到整體結構。伊東豊雄運用 58 塊 3D 鋼筋混凝土曲面互相銜接支撐，完全不需要任何垂直柱子，還能自然形成絕佳的原始洞窟聲學反射！'
-                        },
-                        showAnswer: false
-                    },
-                    {
-                        time: '11:30',
-                        name: '茶六燒肉堂（中清店）',
-                        puzzleBadge: '關卡 5',
-                        desc: '享用精緻豐盛的頂級燒肉午餐！炙烤安格斯牛、多汁伊比利豬與招牌鮭魚味噌湯。',
-                        mapQuery: '茶六燒肉堂 中清店',
-                        transit: '車程約 20 分鐘前往丰原國道四號單車租借處',
-                        transitIcon: 'fa-solid fa-car',
-                        tip: '請務必提前預訂！肉片表面水分收乾後再翻面，口感最香脆。',
-                        puzzle: {
-                            code: '美食界最偉大的化學魔法',
-                            question: '肉片剛放上烤網是紅色的，烤了幾十秒後變成誘人金黃焦褐色並爆發出濃郁香氣，這個高溫下蛋白質和糖分結合的化學魔法叫什麼名字？',
-                            principle: '梅納反應（Maillard reaction）',
-                            answer: '當肉類蛋白質（胺基酸）與還原糖在 140°C～160°C 高溫乾燥環境下相遇，會產生劇烈的分子重組，釋放出數百種堅果香與焦糖香分子，形成漂亮的褐色外衣！'
-                        },
-                        showAnswer: false
-                    },
-                    {
-                        time: '14:00',
-                        name: '后豐鐵馬道 ＋ 東豐自行車綠廊',
-                        puzzleBadge: '關卡 6 (三連發)',
-                        desc: '租用電輔車暢快兜風！穿越百年九號隧道、橫跨大甲溪花樑鋼橋，一路騎至 0 蛋月台。',
-                        mapQuery: '后豐鐵馬道 租車',
-                        transit: '騎乘單車約 2～2.5 小時',
-                        transitIcon: 'fa-solid fa-bicycle',
-                        tip: '九號隧道內偏涼，微風舒適；騎上花樑鋼橋視野極開闊。',
-                        puzzle: {
-                            code: '鐵道工程與歷史三連發',
-                            question: '【6-1】九號隧道裡為什麼像開了 20 度天然冷氣？\n【6-2】花樑鋼橋為什麼全部都是三角形拼成的幾何網格？\n【6-3】0 蛋月台難道是以前鐵路局長的孩子考試常考 0 分嗎？',
-                            principle: '地溫恆溫層＋煙囪效應／桁架結構不可變形性／台鐵零擔貨運諧音',
-                            answer: '6-1：深藏山體岩層長年維持 20°C 恆溫，加上兩端氣壓差產生自然對流！\n6-2：三角形三邊固定角度即鎖死不可變形（桁架結構），能將數百噸火車重量均勻分散！\n6-3：取自台鐵客貨運歷史『零擔月台』（未滿一車廂的散裝零星貨物）諧音，後因改建賣茶葉蛋將錯就錯！'
-                        },
-                        showAnswer: false
-                    },
-                    {
-                        time: '16:45',
-                        name: '終點站：200 days 犒賞草湖芋仔冰 ＆ 頒發破案獎勵',
-                        desc: '純白唯美幾何玻璃屋！全家品嚐經典草湖芋仔冰、花生冰磚，由爸爸頒發柯南名偵探合格小禮物！',
-                        mapQuery: '200 days 東豐綠廊',
-                        transit: '開車返回台北約 2 小時 15 分',
-                        transitIcon: 'fa-solid fa-house',
-                        tip: '拍完全家破案勝利大合照，帶著滿滿歡笑與回憶滿載而歸！'
-                    }
-                ],
-
-                allMysteries: [
-                    {
-                        stage: '第 1 關',
-                        location: 'PRESERVE 惠中店',
-                        title: '會呼吸的麵團密碼',
-                        question: '名偵探們，仔細觀察架上的「酸種麵包（Sourdough）」切面，為什麼它不像一般白吐司那樣細密平整，而是佈滿了「大大小小、分佈不均勻的氣孔」？而且我們明明沒加白醋，為什麼聞起來卻有微微的天然果酸香？',
-                        clue: '請她們湊近聞聞麵包香氣，並比對一般吐司與酸種歐包的切面。',
-                        principle: '野生酵母菌 ＋ 乳酸菌的共生交響曲！',
-                        answer: '一般吐司使用的是單一商業速發酵母，產氣均勻細密；而酸種是用麵粉和水自然培養的野生菌種，裡面的乳酸菌會產生天然乳酸（產生微酸風味，且能天然防腐），野生酵母則會不規則地大口呼出二氧化碳氣泡，經過十幾小時低溫發酵，在麵筋網狀結構中撐出充滿彈性與大大小小的氣室！',
-                        revealed: false
-                    },
-                    {
-                        stage: '第 2 關',
-                        location: '容燒居酒屋 文心總店',
-                        title: '隱形烤箱與炭火的魔術',
-                        question: '兩位偵探，你們看廚房師傅是用「炭火」烤雞肉串和飯糰。明明瓦斯爐的火焰溫度也很高，為什麼頂級居酒屋一定要堅持用木炭炭火？為什麼木炭烤出來的肉串「裡面多汁、外皮香脆」，而且雞油滴下去時常常只發出滋滋聲，卻沒有把肉燻成黑炭？',
-                        clue: '觀察木炭燃燒時的顏色（紅橘光）與師傅手上的小扇子。',
-                        principle: '遠紅外線穿透加熱 ＋ 木炭的多孔吸附性！',
-                        answer: '瓦斯燃燒會產生大量水蒸氣，容易讓外皮變濕軟；而高溫炭火主要放射的是遠紅外線，能直接穿透進雞肉內部均勻加熱，瞬間鎖住肉汁，讓外層在無水的乾燥高溫下形成酥脆外皮。同時，優質木炭（如備長炭）結構多孔，燃燒完全、灰分極少，所以不會有瓦斯味，只有迷人的純淨炭香！',
-                        revealed: false
-                    },
-                    {
-                        stage: '第 3 關',
-                        location: '台中日月千喜酒店',
-                        title: '隔空取電的隱形鑰匙',
-                        question: '進房間時，我們只要拿這張塑膠房卡在門把上「嗶」一聲門就開了。但是這張卡片裡既沒有裝水銀電池，也沒有金屬接點，門鎖到底是用什麼力量「讀取」房卡裡的一長串房號密碼的？',
-                        clue: '用手機手電筒強光貼著房卡背後透光照照看，能否看到邊緣有一圈淡淡的線圈陰影？',
-                        principle: '法拉第電磁感應（RFID 無線射頻辨識）！',
-                        answer: '門鎖內部隨時在發射微弱的電磁波。當房卡靠近時，卡片內藏的細小銅線圈感受到磁場變化，就會產生微弱的「感應電流」瞬間把卡片晶片喚醒；晶片利用這瞬間的一點點電量，發射出無線射頻訊號把身分密碼傳給門鎖，整個過程不到 0.1 秒！',
-                        revealed: false
-                    },
-                    {
-                        stage: '第 4 關',
-                        location: '臺中國家歌劇院',
-                        title: '沒有柱子的洞穴迷宮',
-                        question: '偵探請抬頭看！傳統的房子都需要筆直的梁柱和天花板支撐，但這棟由日本建築大師伊東豊雄設計的歌劇院，為什麼整棟建築裡「幾乎看不到任何一根傳統的垂直樑柱」？它的牆面為什麼都是彎彎曲曲像壺一樣？這棟建築到底是怎麼站立起來的？',
-                        clue: '站在一樓曲牆邊摸摸牆面，並試著在曲面凹處小聲對著牆壁講話，聽聽聲音的變化。',
-                        principle: '3D 仿生連續曲牆結構（曲面受力原理）！',
-                        answer: '就像蛋殼或安全帽一樣，當平面受壓容易折斷，但「曲面」卻能將重力均勻分散到整片曲面上。伊東豊雄運用了 58 塊被稱為「曲牆（Sound Cave 聲音涵洞）」的 3D 鋼筋混凝土曲面互相銜接支撐，讓整座建築就像自然形成的原始洞穴，不僅不需要樑柱，彎曲的牆面還能自然形成絕佳的聲學反射！',
-                        revealed: false
-                    },
-                    {
-                        stage: '第 5 關',
-                        location: '茶六燒肉堂 中清店',
-                        title: '美食界最偉大的化學魔法',
-                        question: '肉片剛放上烤網時是紅色的，而且沒什麼香味。但烤了幾十秒後，表面變成漂亮的「金黃焦褐色」，同時爆發出一股讓人流口水的烤肉濃香！在化學料理界，這個「高溫下讓蛋白質和糖分結合產生誘人香氣與褐色」的魔法反應，叫作什麼名字？',
-                        clue: '提示：這是一個以法國化學家命名的著名化學反應（四個字，美ＯＯＯ，或者煮牛排、烤麵包都有它！）。',
-                        principle: '梅納反應（Maillard reaction）！',
-                        answer: '當肉類中的蛋白質（胺基酸）與微量的還原糖在 140°C～160°C 的高溫乾燥環境下相遇，會產生極其複雜的分子重組，釋放出成百上千種香氣分子（堅果香、烤肉香、焦糖香），並形成誘人的褐色外衣。所以烤肉網溫度一定要夠熱、表面水分要收乾，梅納反應才會完美爆發！',
-                        revealed: false
-                    },
-                    {
-                        stage: '第 6 關 (三連發)',
-                        location: '后豐鐵馬道 ＋ 東豐綠廊',
-                        title: '百年鐵道與工程的三重密碼',
-                        question: '【6-1 九號隧道】外面 28 度，一進 1.2 公里百年隧道像開 20 度天然冷氣？\n【6-2 花樑鋼橋】為什麼鋼橋兩旁全部都是「三角形」拼成的幾何網格？\n【6-3 0 蛋月台】難道是以前鐵路局長的孩子考試常考 0 分嗎？',
-                        clue: '摸摸隧道壁的涼度、觀察鋼橋的三角形桁架、尋找月台上的藍皮老火車。',
-                        principle: '恆溫地溫層＋煙囪對流／三角形桁架幾何剛性／台鐵散裝零擔貨運諧音',
-                        answer: '6-1：地底岩層不受日照長年維持 20-22 度恆溫，加上南北出口高度差形成煙囪對流通風！\n6-2：正方形受壓會變形，三角形三邊固定角度即死鎖無法變形（桁架結構），將數百噸重量分散到橋墩！\n6-3：源自台鐵早期運送未滿一整節車廂的散裝零星貨物稱為「零擔」（音同 0 蛋），改建後賣茶葉蛋將錯就錯！',
-                        revealed: false
-                    }
-                ],
-
-                foodList: [
-                    {
-                        name: 'PRESERVE (台中惠中店)',
-                        category: '純植歐式手作烘焙',
-                        area: '西屯區惠中路二段',
-                        desc: '知名蔬食 Miacucina 旗下品牌，主打天然野生酵母低溫發酵、無人工添加物與麥香濃郁。',
-                        mustEat: '天然酸種麵包、自製肉桂捲、法式長棍',
-                        timing: '週四 19:40 購買 (20:00打烊)',
-                        image: 'https://images.unsplash.com/photo-1509440159596-0249088772ff?auto=format&fit=crop&w=800&q=80',
-                        mapQuery: 'PRESERVE 台中惠中店'
-                    },
-                    {
-                        name: '容燒居酒屋 (文心總店)',
-                        category: '炭火串燒與深夜食堂',
-                        area: '南屯區文心南五路',
-                        desc: '精湛備長炭炭火慢烤，鮮嫩雞肉串、明太子烤飯糰、牛肋條串與舒壓小酌。',
-                        mustEat: '明太子雞肉串、醬烤飯糰、炭烤牛肋',
-                        timing: '週四 20:30 晚餐小酌',
-                        image: 'https://images.unsplash.com/photo-1544025162-d76694265947?auto=format&fit=crop&w=800&q=80',
-                        mapQuery: '容燒居酒屋 文心總店'
-                    },
-                    {
-                        name: '暮香炭烤土司 (大業店/向上店)',
-                        category: '台中必吃現烤早餐',
-                        area: 'Uber Eats 送至日月千喜大廳',
-                        desc: '濃郁花生醬搭配現煎厚切黑豬肉排與融化起司，炭香十足，搭配香醇熱紅茶牛奶。',
-                        mustEat: '花醬肉排起司蛋、紅茶牛奶',
-                        timing: '週五 08:00 房內早餐',
-                        image: 'https://images.unsplash.com/photo-1525351484163-7529414344d8?auto=format&fit=crop&w=800&q=80',
-                        mapQuery: '暮香炭烤土司'
-                    },
-                    {
-                        name: '茶六燒肉堂 (中清店)',
-                        category: '頂級日式燒肉',
-                        area: '北屯區中清路二段',
-                        desc: '台中燒肉霸主代表！大器寬敞清水模裝潢，油花分布極美的冷藏牛肉、鮭魚味噌湯與烤飯糰。',
-                        mustEat: '極上牛肉套餐、特烈黑糖凍、烤飯糰',
-                        timing: '週五 11:30 午餐大餐',
-                        image: 'https://images.unsplash.com/photo-1544025162-d76694265947?auto=format&fit=crop&w=800&q=80',
-                        mapQuery: '茶六燒肉堂 中清店'
-                    },
-                    {
-                        name: '200 days (東豐綠廊店)',
-                        category: '純白玻璃屋與草湖芋仔冰',
-                        area: '豐原區朴子街東豐自行車道旁',
-                        desc: '東豐自行車道最美純白幾何玻璃屋，古早味草湖芋仔冰磚、花生冰、百香果冰棒，冰涼消暑。',
-                        mustEat: '草湖芋仔冰、花生冰磚、酸甜洛神冰棒',
-                        timing: '週五 16:45 騎車終點站',
-                        image: 'https://images.unsplash.com/photo-1557142046-c704a3adf364?auto=format&fit=crop&w=800&q=80',
-                        mapQuery: '200 days 東豐綠廊'
-                    }
-                ],
-
-                checklist: [
-                    { item: '出發時間定案 (週四 17:15-17:30)', desc: '車程約 2 小時 15 分，確保 19:40 前抵達 PRESERVE。', done: false },
-                    { item: '致電 PRESERVE 預留麵包 (04-2251-3858)', desc: '若週四下午發現出發較晚，請先電話預留酸種麵包與肉桂捲。', done: false },
-                    { item: '茶六燒肉堂中清店週五午餐訂位', desc: '提早確認週五 11:30-12:00 訂位資訊。', done: false },
-                    { item: '台中日月千喜酒店入住確認', desc: '確認家庭房型與地下停車場車位。', done: false },
-                    { item: '預先準備「柯南小盲盒 / 貼紙」破案彩蛋', desc: '先在台北買好，作為最後 200 days 兌換合格獎勵的驚喜！', done: false },
-                    { item: '后豐電輔車租借與防風薄外套', desc: '九號隧道內偏涼，攜帶薄風衣與太陽眼鏡。', done: false }
-                ],
+                markSolved(id) {
+                    this.solvedPuzzles[id] = !this.solvedPuzzles[id];
+                },
+                isSolved(id) {
+                    return !!this.solvedPuzzles[id];
+                },
 
                 openGoogleMap(item) {
                     if (!item) return;
@@ -839,7 +704,270 @@
                         url = 'https://maps.apple.com/?q=' + encodeURIComponent(query);
                     }
                     window.open(url, '_blank');
-                }
+                },
+
+                day1Spots: [
+                    {
+                        time: '17:15',
+                        title: '台北啟程 ➔ 國道一號南下',
+                        badge: 'DEPARTURE',
+                        desc: '安排於 17:15～17:30 出發，車程約 2 小時 15 分。目標 19:40 抵達惠中路，趕在 PRESERVE 20:00 打烊前取麵包。',
+                        mapDir: { origin: '台北車站', dest: 'PRESERVE 台中惠中店' },
+                        tip: '下中港交流道走市政路轉惠中路二段，店門前有臨停車位。'
+                    },
+                    {
+                        time: '19:40',
+                        title: 'PRESERVE 惠中店（純植烘焙坊）',
+                        badge: '關卡 1',
+                        desc: '知名蔬食 Miacucina 旗下品牌。挑選低溫長時間發酵的天然酸種麵包（Sourdough）與招牌肉桂捲，當翌日私房早餐。',
+                        mapQuery: 'PRESERVE 台中惠中店',
+                        tip: '營業時間至 20:00，電話 (04) 2251-3858。',
+                        puzzle: {
+                            id: 'p1',
+                            title: '會呼吸的麵團密碼',
+                            question: '名偵探們，仔細觀察架上的「酸種麵包」切面，為什麼它不像一般吐司細密平整，而是佈滿大大小小不均勻的氣孔？而且明明沒加白醋，為什麼聞起來卻有微酸果香？',
+                            clue: '湊近聞聞剛出爐歐包香氣，觀察天然發酵不均勻氣室。',
+                            principle: '野生酵母菌 ＋ 乳酸菌的共生交響曲',
+                            answer: '一般白吐司使用單一「商業速發酵母」，發酵迅速均勻；而酸種是用麵粉和水自然培養的「野生菌種」，乳酸菌產生天然乳酸（自然微酸且能防腐），野生酵母則在十幾小時低溫發酵中不規則吐出二氧化碳氣泡，在麵筋網狀結構中撐出充滿彈性與大小不一的氣室！'
+                        }
+                    },
+                    {
+                        time: '20:00',
+                        title: '台中日月千喜酒店（七期）入住登記',
+                        badge: 'HOTEL CHECK-IN',
+                        desc: '位於七期精華地段，就在 PRESERVE 斜後方僅 180 公尺（走路只要 2 分鐘）！車子直接停入地下停車場後辦理 Check-in。',
+                        mapQuery: '台中日月千喜酒店',
+                        tip: '放妥行李梳洗後，步行或短程車程前往居酒屋。'
+                    },
+                    {
+                        time: '20:30',
+                        title: '容燒居酒屋（文心總店）',
+                        badge: '關卡 2',
+                        desc: '週四晚抵達台中後的放鬆小酌！享用備長炭現烤鮮嫩雞肉串、醬烤飯糰與特色串燒。',
+                        mapQuery: '容燒居酒屋 文心總店',
+                        tip: '喝酒不開車，可叫 Uber 或計程車前往。',
+                        puzzle: {
+                            id: 'p2',
+                            title: '隱形烤箱與炭火的魔術',
+                            question: '兩位偵探看廚房師傅用炭火烤串燒。明明瓦斯爐火也很熱，為什麼頂級居酒屋堅持用木炭炭火？為什麼能烤到外脆內多汁，油滴下去卻沒把肉燻黑？',
+                            clue: '觀察木炭燃燒時的紅橘光，以及師傅手上的小扇子。',
+                            principle: '遠紅外線穿透加熱 ＋ 備長炭多孔吸附性',
+                            answer: '瓦斯燃燒會產生大量水蒸氣讓肉變濕軟；而高溫木炭主要放射的是「遠紅外線」，能直接穿透進雞肉內部均勻加熱，瞬間鎖住肉汁，讓外層在無水的乾燥高溫下形成酥脆外皮。同時優質備長炭結構多孔且燃燒完全、灰分極少，所以只有純淨炭香！'
+                        }
+                    },
+                    {
+                        time: '22:30',
+                        title: '返回日月千喜酒店・晚安儲備體力',
+                        badge: 'REST',
+                        desc: '回到客房泡澡休息，為明天的破案大冒險養精蓄銳。',
+                        mapQuery: '台中日月千喜酒店'
+                    }
+                ],
+
+                day2Spots: [
+                    {
+                        time: '08:00',
+                        title: '日月千喜房內早餐 ＆ 房卡解密',
+                        badge: '關卡 3',
+                        desc: '房內沖熱水壺咖啡配昨晚 PRESERVE 酸種歐包與肉桂捲，亦可叫 Uber Eats「暮香炭烤土司（花醬肉排起司蛋配熱紅茶牛奶）」。09:00 前辦理退房。',
+                        mapQuery: '台中日月千喜酒店',
+                        tip: '檢查行李與房卡，準備出發前往歌劇院。',
+                        puzzle: {
+                            id: 'p3',
+                            title: '隔空取電的隱形鑰匙',
+                            question: '進出房間時，只要拿塑膠房卡在門把嗶一聲就開了。但是這張卡片裡既沒有電池也沒有金屬接點，門鎖到底用什麼力量讀取房卡裡的長串密碼？',
+                            clue: '用手機手電筒強光貼著房卡背後透光照照看，能否看到邊緣有一圈淡淡的線圈陰影？',
+                            principle: '法拉第電磁感應（RFID 無線射頻辨識）',
+                            answer: '門鎖內部隨時發射微弱電磁波。當房卡靠近時，卡片內藏的細小銅線圈感受到磁場變化，產生微弱「感應電流」瞬間喚醒晶片；晶片利用這瞬間的一點點電量發射無線射頻訊號把身分密碼傳給門鎖，整個過程不到 0.1 秒！'
+                        }
+                    },
+                    {
+                        time: '09:15',
+                        title: '臺中國家歌劇院（伊東豊雄建築）',
+                        badge: '關卡 4',
+                        desc: '普立茲克建築獎得主震撼全球之作！參觀無樑柱曲牆構造「美聲涵洞」、文創選品店與 6F 空中花園。',
+                        mapQuery: '臺中國家歌劇院',
+                        tip: '可在曲面凹處小聲講話，親身體會奇妙的聲學聚焦效應。',
+                        puzzle: {
+                            id: 'p4',
+                            title: '沒有柱子的洞穴迷宮',
+                            question: '傳統房屋都需要筆直梁柱支撐，但歌劇院整棟建築裡幾乎看不到傳統樑柱，牆面都是彎曲像壺一樣，它是怎麼站立起來的？',
+                            clue: '站在一樓曲牆邊摸摸牆面，對著曲面凹處小聲講話聽聽聲音變化。',
+                            principle: '3D 仿生連續曲牆結構（曲面受力原理）',
+                            answer: '就像蛋殼或安全帽一樣，曲面能將受力均勻分散到整體結構。伊東豊雄運用了 58 塊被稱為「曲牆（Sound Cave 聲音涵洞）」的 3D 鋼筋混凝土曲面互相銜接支撐，不僅不需要任何垂直樑柱，彎曲的牆面還能自然形成絕佳的聲學反射！'
+                        }
+                    },
+                    {
+                        time: '11:30',
+                        title: '茶六燒肉堂（中清店）',
+                        badge: '關卡 5',
+                        desc: '享用精緻豐盛的燒肉大餐！大器清水模空間品嚐極上安格斯牛、多汁伊比利豬與招牌鮭魚味噌湯。',
+                        mapQuery: '茶六燒肉堂 中清店',
+                        tip: '肉片放上烤網後表面水分收乾再翻面，香氣最濃郁。',
+                        puzzle: {
+                            id: 'p5',
+                            title: '美食界最偉大的化學魔法',
+                            question: '肉片剛放上烤網時是紅色的，烤了幾十秒後變成漂亮的「金黃焦褐色」並爆發濃郁烤肉香，這個高溫下蛋白質和糖分結合的化學魔法叫什麼名字？',
+                            clue: '提示：以法國化學家命名的著名化學反應（四個字，美ＯＯＯ，煮牛排、烤麵包都有它！）。',
+                            principle: '梅納反應（Maillard reaction）',
+                            answer: '當肉類中的蛋白質（胺基酸）與微量還原糖在 140°C～160°C 的高溫乾燥環境下相遇，產生劇烈的分子重組，釋放出成百上千種香氣分子（堅果香、烤肉香、焦糖香），並形成誘人的褐色外衣！'
+                        }
+                    },
+                    {
+                        time: '14:00',
+                        title: '后豐鐵馬道 ＋ 東豐自行車綠廊',
+                        badge: '關卡 6',
+                        desc: '租用電輔車暢快兜風！穿越百年九號隧道、橫跨大甲溪花樑鋼橋，一路奔馳至石岡 0 蛋月台。',
+                        mapQuery: '后豐鐵馬道 租車',
+                        tip: '九號隧道內長年涼爽，出隧道後花樑鋼橋景致壯闊。',
+                        puzzle: {
+                            id: 'p6',
+                            title: '百年鐵道與工程三連發',
+                            question: '【6-1 九號隧道】外面 28 度，一騎進 1.2 公里百年隧道像開 20 度天然冷氣？\n【6-2 花樑鋼橋】為什麼鋼橋兩旁全部都是「三角形」拼成的幾何網格？\n【6-3 0 蛋月台】難道是以前鐵路局長的孩子考試常考 0 分嗎？',
+                            clue: '摸摸隧道壁涼度、觀察鋼橋三角形桁架、尋找月台上的藍皮老火車。',
+                            principle: '地溫恆溫層＋煙囪對流／三角形不可變形性／台鐵零擔散裝貨運諧音',
+                            answer: '6-1：深藏地底岩層長年維持 20°C 恆溫，加上南北出口高度差形成煙囪效應對流！\n6-2：三角形三邊固定角度即鎖死無法變形（桁架結構 Truss），將數百噸火車重量均勻分散！\n6-3：取自台鐵客貨運歷史『零擔月台』（湊不滿一節車廂的散裝零售貨物）諧音，後因賣茶葉蛋將錯就錯！'
+                        }
+                    },
+                    {
+                        time: '16:45',
+                        title: '終點站：200 days 犒賞草湖芋仔冰 ＆ 頒發柯南盲盒',
+                        badge: 'MISSION COMPLETE',
+                        desc: '純白唯美幾何玻璃屋！品嚐草湖芋仔冰磚與酸甜洛神冰棒，由關主爸爸頒發柯南名偵探合格獎勵，拍照大合照！',
+                        mapQuery: '200 days 東豐綠廊',
+                        tip: '約 17:30 開車啟程返北，車程約 2 小時 15 分，順暢返回台北。'
+                    }
+                ],
+
+                allPuzzles: [
+                    {
+                        id: 'p1',
+                        stage: '第 1 關',
+                        location: 'PRESERVE 惠中店',
+                        title: '會呼吸的麵團密碼',
+                        question: '名偵探們，仔細觀察架上的「酸種麵包（Sourdough）」切面，為什麼它不像一般白吐司那樣細密平整，而是佈滿了「大大小小、分佈不均勻的氣孔」？而且我們明明沒加白醋，為什麼聞起來卻有微微的天然果酸香？',
+                        clue: '湊近聞聞麵包香氣，並比對一般吐司與酸種歐包的切面。',
+                        principle: '野生酵母菌 ＋ 乳酸菌的共生交響曲！',
+                        answer: '一般吐司使用的是單一商業速發酵母，產氣均勻細密；而酸種是用麵粉和水自然培養的野生菌種，裡面的乳酸菌會產生天然乳酸（產生微酸風味，且能天然防腐），野生酵母則會不規則地大口呼出二氧化碳氣泡，經過十幾小時低溫發酵，在麵筋網狀結構中撐出充滿彈性與大大小小的氣室！',
+                        open: false
+                    },
+                    {
+                        id: 'p2',
+                        stage: '第 2 關',
+                        location: '容燒居酒屋 文心總店',
+                        title: '隱形烤箱與炭火的魔術',
+                        question: '兩位偵探，你們看廚房師傅是用「炭火」烤雞肉串和飯糰。明明瓦斯爐的火焰溫度也很高，為什麼頂級居酒屋一定要堅持用木炭炭火？為什麼木炭烤出來的肉串「裡面多汁、外皮香脆」，而且雞油滴下去時常常只發出滋滋聲，卻沒有把肉燻成黑炭？',
+                        clue: '觀察木炭燃燒時的顏色（紅橘光）與師傅手上的小扇子。',
+                        principle: '遠紅外線穿透加熱 ＋ 木炭的多孔吸附性！',
+                        answer: '瓦斯燃燒會產生大量水蒸氣，容易讓外皮變濕軟；而高溫炭火主要放射的是遠紅外線，能直接穿透進雞肉內部均勻加熱，瞬間鎖住肉汁，讓外層在無水的乾燥高溫下形成酥脆外皮。同時，優質木炭（如備長炭）結構多孔，燃燒完全、灰分極少，所以不會有瓦斯味，只有迷人的純淨炭香！',
+                        open: false
+                    },
+                    {
+                        id: 'p3',
+                        stage: '第 3 關',
+                        location: '台中日月千喜酒店',
+                        title: '隔空取電的隱形鑰匙',
+                        question: '進房間時，我們只要拿這張塑膠房卡在門把上「嗶」一聲門就開了。但是這張卡片裡既沒有裝水銀電池，也沒有金屬接點，門鎖到底是用什麼力量「讀取」房卡裡的一長串房號密碼的？',
+                        clue: '用手機手電筒強光貼著房卡背後透光照照看，能否看到邊緣有一圈淡淡的線圈陰影？',
+                        principle: '法拉第電磁感應（RFID 無線射頻辨識）！',
+                        answer: '門鎖內部隨時在發射微弱的電磁波。當房卡靠近時，卡片內藏的細小銅線圈感受到磁場變化，就會產生微弱的「感應電流」瞬間把卡片晶片喚醒；晶片利用這瞬間的一點點電量，發射出無線射頻訊號把身分密碼傳給門鎖，整個過程不到 0.1 秒！',
+                        open: false
+                    },
+                    {
+                        id: 'p4',
+                        stage: '第 4 關',
+                        location: '臺中國家歌劇院',
+                        title: '沒有柱子的洞穴迷宮',
+                        question: '偵探請抬頭看！傳統的房子都需要筆直的梁柱和天花板支撐，但這棟由日本建築大師伊東豊雄設計的歌劇院，為什麼整棟建築裡「幾乎看不到任何一根傳統的垂直樑柱」？它的牆面為什麼都是彎彎曲曲像壺一樣？這棟建築到底是怎麼站立起來的？',
+                        clue: '站在一樓曲牆邊摸摸牆面，並試著在曲面凹處小聲對著牆壁講話，聽聽聲音的變化。',
+                        principle: '3D 仿生連續曲牆結構（曲面受力原理）！',
+                        answer: '就像蛋殼或安全帽一樣，當平面受壓容易折斷，但「曲面」卻能將重力均勻分散到整片曲面上。伊東豊雄運用了 58 塊被稱為「曲牆（Sound Cave 聲音涵洞）」的 3D 鋼筋混凝土曲面互相銜接支撐，讓整座建築就像自然形成的原始洞穴，不僅不需要樑柱，彎曲的牆面還能自然形成絕佳的聲學反射！',
+                        open: false
+                    },
+                    {
+                        id: 'p5',
+                        stage: '第 5 關',
+                        location: '茶六燒肉堂 中清店',
+                        title: '美食界最偉大的化學魔法',
+                        question: '肉片剛放上烤網時是紅色的，而且沒什麼香味。但烤了幾十秒後，表面變成漂亮的「金黃焦褐色」，同時爆發出一股讓人流口水的烤肉濃香！在化學料理界，這個「高溫下讓蛋白質和糖分結合產生誘人香氣與褐色」的魔法反應，叫作什麼名字？',
+                        clue: '提示：這是一個以法國化學家命名的著名化學反應（四個字，美ＯＯＯ，或者煮牛排、烤麵包都有它！）。',
+                        principle: '梅納反應（Maillard reaction）！',
+                        answer: '當肉類中的蛋白質（胺基酸）與微量的還原糖在 140°C～160°C 的高溫乾燥環境下相遇，會產生極其複雜的分子重組，釋放出成百上千種香氣分子（堅果香、烤肉香、焦糖香），並形成誘人的褐色外衣。所以烤肉網溫度一定要夠熱、表面水分要收乾，梅納反應才會完美爆發！',
+                        open: false
+                    },
+                    {
+                        id: 'p6',
+                        stage: '第 6 關 (三連發)',
+                        location: '后豐鐵馬道 ＋ 東豐自行車綠廊',
+                        title: '百年鐵道與工程的三重密碼',
+                        question: '【6-1 九號隧道】外面 28 度，為什麼一騎進全長 1.2 公里的百年鐵路隧道裡，瞬間就像打開了 20 度的天然冷氣？\n【6-2 花樑鋼橋】騎上鋼橋時看看兩旁鋼架，為什麼全部都是「三角形」拼成的幾何網格？\n【6-3 0 蛋月台】這座保留舊藍皮火車的月台叫「0 蛋月台」，難道是以前鐵路局長的孩子考試常考 0 分嗎？',
+                        clue: '摸摸隧道岩壁溫度、觀察大甲溪鋼橋桁架網格、尋找舊東勢支線石岡月台藍皮老車廂。',
+                        principle: '地溫恆溫層＋煙囪效應／三角形不可變形桁架／台鐵零擔貨運諧音',
+                        answer: '6-1：深藏山體岩層長年維持 20°C 恆溫，加上南北出口高度差形成煙囪效應對流！\n6-2：三角形三邊固定角度即死鎖無法變形（桁架結構 Truss），將數百噸重量分散傳遞到橋墩！\n6-3：取自台鐵客貨運歷史『零擔月台』（未滿一整節車廂的散裝零售貨物）諧音，後因擺攤賣茶葉蛋將錯就錯！',
+                        open: false
+                    }
+                ],
+
+                foodList: [
+                    {
+                        name: 'PRESERVE (台中惠中店)',
+                        category: '純植天然手作烘焙',
+                        area: '西屯區惠中路二段39號',
+                        timing: '週四 19:40 購買 (20:00打烊)',
+                        desc: 'Miacucina 旗下品牌，主打低溫長時間發酵歐式麵包與純淨食材，無人工添加物。',
+                        mustEat: '經典天然酸種麵包 (Sourdough)、自製肉桂捲、法式長棍',
+                        note: '距日月千喜僅 180 公尺 (步行 2 分)',
+                        mapQuery: 'PRESERVE 台中惠中店'
+                    },
+                    {
+                        name: '容燒居酒屋 (文心總店)',
+                        category: '備長炭串燒與宵夜居酒屋',
+                        area: '南屯區文心南五路一段322-6號',
+                        timing: '週四 20:30 晚餐小酌',
+                        desc: '堅持木炭炭火現烤，遠紅外線高溫鎖水，串燒外脆內多汁，氛圍溫馨。',
+                        mustEat: '明太子雞肉串、醬烤明太子飯糰、炭烤牛肋條',
+                        note: '距飯店車程約 7 分鐘',
+                        mapQuery: '容燒居酒屋 文心總店'
+                    },
+                    {
+                        name: '暮香炭烤土司 (大業店/向上店)',
+                        category: '台中高人氣現烤早餐',
+                        area: 'Uber Eats 外送至日月千喜 1F 大廳',
+                        timing: '週五 08:00 房內早餐',
+                        desc: '炭火烘烤酥香吐司夾入特製顆粒花生醬、現煎厚切黑豬肉排與融化起司。',
+                        mustEat: '花醬肉排起司蛋、香醇熱紅茶牛奶',
+                        note: '與 PRESERVE 歐包完美搭配',
+                        mapQuery: '暮香炭烤土司'
+                    },
+                    {
+                        name: '茶六燒肉堂 (中清店)',
+                        category: '頂級日式燒肉殿堂',
+                        area: '北屯區中清路二段1037號',
+                        timing: '週五 11:30 午餐大餐',
+                        desc: '台中超人氣燒肉代表，大氣清水模建築，頂級黑毛牛肉、招牌鮭魚味噌湯與烤飯糰。',
+                        mustEat: '極上牛肉套餐、特烈黑糖凍、烤飯糰',
+                        note: '建議提前 30 天線上搶位',
+                        mapQuery: '茶六燒肉堂 中清店'
+                    },
+                    {
+                        name: '200 days (東豐自行車道旁)',
+                        category: '純白唯美幾何玻璃屋',
+                        area: '豐原區朴子街178巷29號',
+                        timing: '週五 16:45 騎車終點站',
+                        desc: '東豐自行車綠廊上的網美白堊玻璃屋，享受古早味草湖芋仔冰磚，消暑療癒。',
+                        mustEat: '草湖芋仔冰、花生冰磚、酸甜洛神花冰棒',
+                        note: '終點頒發柯南名偵探獎勵',
+                        mapQuery: '200 days 東豐綠廊'
+                    }
+                ],
+
+                checklist: [
+                    { title: '確認台北出發時間 (週四 17:15-17:30)', detail: '車程 2 小時 15 分，確保 19:40 抵達 PRESERVE。', done: false },
+                    { title: '下午致電 PRESERVE 預留麵包 ((04) 2251-3858)', detail: '若出發較晚，先請店員保留酸種歐包與肉桂捲。', done: false },
+                    { title: '預先購買《名偵探柯南》盲盒/貼紙', detail: '先在台北準備好，在 200 days 作為終點破案合格彩蛋獎勵。', done: false },
+                    { title: '茶六燒肉堂中清店週五 11:30 訂位', detail: '確保預約成功，肉品在烤網收乾水分翻面。', done: false },
+                    { title: '后豐電輔車租借與防風薄風衣', detail: '九號隧道長年 20 度偏涼，備好薄外套與墨鏡。', done: false }
+                ]
             }
         }
     </script>
